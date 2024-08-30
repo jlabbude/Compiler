@@ -33,7 +33,7 @@ pub fn tokenize_int(contents: &str) -> Option<Vec<Expression>> {
 pub fn tokenize_str(contents: &str) -> Option<Vec<Expression>> {
     let mut tokens: Vec<Expression> = Vec::new();
     Regex::new(&format!(
-        r"；*\s*{}\s+([ぁ-ゔ])+\s+(＝)\s*([a-zA-Z][a-zA-Z1-9\s]*)+\s*(；)",
+        r"；*\s*{}\s+([ぁ-ゔ])+\s+(＝)\s*(「.*」)+\s*(；)",
         ReservedWords::Str
     ))
     .unwrap()
