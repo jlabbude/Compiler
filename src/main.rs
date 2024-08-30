@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 mod tokenization;
 
 extern crate core;
@@ -8,7 +9,7 @@ use std::path::Path;
 #[derive(Debug)]
 enum Literal {
     Int(i32),
-    String(String),
+    Str(String),
 }
 
 #[derive(Debug)]
@@ -31,11 +32,14 @@ const FUNCTION: &str = "関数";
 const INT: &str = "整数";
 // なら
 const IF: &str = "なら";
+// もじれつ
+const STR: &str = "文字列";
 
 #[derive(Debug)]
 enum ReservedWords {
     Function(String),
     Int(String),
+    Str(String),
     If(String),
 }
 
@@ -44,6 +48,7 @@ impl fmt::Display for ReservedWords {
         match self {
             ReservedWords::Function(s) => write!(f, "{}", s),
             ReservedWords::Int(s) => write!(f, "{}", s),
+            ReservedWords::Str(s) => write!(f, "{}", s),
             ReservedWords::If(s) => write!(f, "{}", s),
         }
     }
@@ -64,8 +69,11 @@ fn check_file(source_file: &Path) -> Result<String, String> {
     }
 }
 
-fn tokenizer(contents: String) -> Option<Vec<Expression>> {
-    tokenization::tokenize_int(&contents)
+fn tokenizer(contents: String) -> Option<Vec<Vec<Expression>>> {
+    Some(vec![
+        tokenization::tokenize_int(&contents)?,
+        tokenization::tokenize_str(&contents)?,
+    ])
 }
 
 fn main() {
@@ -77,9 +85,17 @@ fn main() {
     let source_file = Path::new(&args[1]);
     match check_file(source_file) {
         Ok(_) => {
-            let tokens = tokenizer(std::fs::read_to_string(source_file).unwrap()).unwrap();
-            println!("{:?}", tokens);
-        },
+            match tokenizer(std::fs::read_to_string(source_file).unwrap()) {
+                Some(x) => x,
+                None => panic!("Lexical error"), // todo form error
+            }
+                .iter()
+                .for_each(|tokens| {
+                    tokens.iter().for_each(|token| {
+                        println!("{:?}", token);
+                    });
+                });
+        }
         Err(e) => panic!("{}", e),
     };
 }
