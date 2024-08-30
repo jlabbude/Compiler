@@ -3,7 +3,7 @@ mod tokenization;
 
 extern crate core;
 
-use core::fmt;
+use std::fmt;
 use std::path::Path;
 
 #[derive(Debug)]
@@ -26,30 +26,37 @@ struct Expression {
     members: Vec<TokenMembers>,
 }
 
-// かんすう
-const FUNCTION: &str = "関数";
-// せいすう
-const INT: &str = "整数";
-// なら
-const IF: &str = "なら";
-// もじれつ
-const STR: &str = "文字列";
-
 #[derive(Debug)]
 enum ReservedWords {
-    Function(String),
-    Int(String),
-    Str(String),
-    If(String),
+    Function,
+    Int,
+    Str,
+    If,
+}
+
+const FUNCTION: &str = "関数"; // かんすう
+const INT: &str = "整数"; // なら
+const IF: &str = "なら"; // せいすう
+const STR: &str = "文字列"; // もじれつ
+
+impl ReservedWords {
+    fn as_str(&self) -> &str {
+        match self {
+            ReservedWords::Function => FUNCTION,
+            ReservedWords::If => IF,
+            ReservedWords::Int => INT,
+            ReservedWords::Str => STR,
+        }
+    }
 }
 
 impl fmt::Display for ReservedWords {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ReservedWords::Function(s) => write!(f, "{}", s),
-            ReservedWords::Int(s) => write!(f, "{}", s),
-            ReservedWords::Str(s) => write!(f, "{}", s),
-            ReservedWords::If(s) => write!(f, "{}", s),
+            ReservedWords::Function => write!(f, "{}", FUNCTION),
+            ReservedWords::If => write!(f, "{}", IF),
+            ReservedWords::Int => write!(f, "{}", INT),
+            ReservedWords::Str => write!(f, "{}", STR),
         }
     }
 }
@@ -89,12 +96,12 @@ fn main() {
                 Some(x) => x,
                 None => panic!("Lexical error"), // todo form error
             }
-                .iter()
-                .for_each(|tokens| {
-                    tokens.iter().for_each(|token| {
-                        println!("{:?}", token);
-                    });
+            .iter()
+            .for_each(|tokens| {
+                tokens.iter().for_each(|token| {
+                    println!("{:?}", token);
                 });
+            });
         }
         Err(e) => panic!("{}", e),
     };
