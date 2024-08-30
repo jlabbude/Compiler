@@ -1,14 +1,54 @@
+mod tokenization;
+
+extern crate core;
+
+use core::fmt;
 use std::path::Path;
 
-// function, int, if
-// かんすう, せいすう, なら
-const RESERVED_WORDS: [&str; 3] = ["関数", "整数", "なら"];
-
-enum Token {
-    Function,
-    Int,
-    If,
+#[derive(Debug)]
+enum Literal {
+    Int(i32),
+    String(String),
 }
+
+#[derive(Debug)]
+enum TokenMembers {
+    Identifier(String),
+    Literal(Literal),
+    Operator(char),
+    Separator(char),
+}
+
+#[derive(Debug)]
+struct Expression {
+    token: ReservedWords,
+    members: Vec<TokenMembers>,
+}
+
+// かんすう
+const FUNCTION: &str = "関数";
+// せいすう
+const INT: &str = "整数";
+// なら
+const IF: &str = "なら";
+
+#[derive(Debug)]
+enum ReservedWords {
+    Function(String),
+    Int(String),
+    If(String),
+}
+
+impl fmt::Display for ReservedWords {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ReservedWords::Function(s) => write!(f, "{}", s),
+            ReservedWords::Int(s) => write!(f, "{}", s),
+            ReservedWords::If(s) => write!(f, "{}", s),
+        }
+    }
+}
+
 fn check_file(source_file: &Path) -> Result<String, String> {
     println!("{}をコンパイルする", source_file.display());
     match source_file.exists() {
@@ -24,49 +64,8 @@ fn check_file(source_file: &Path) -> Result<String, String> {
     }
 }
 
-fn read_file(source_file: &Path) -> Option<Vec<String>> {
-    let mut lines = Vec::new();
-    match std::fs::read_to_string(source_file) {
-        Ok(contents) => {
-            regex::Regex::new(r"\s*([一-龠|ぁ-ゔ])*\s*;")
-                .unwrap()
-                .captures_iter(&contents)
-                .for_each(|cap| {
-                    lines.push(
-                        cap.get(0)
-                            .unwrap()
-                            .as_str()
-                            .to_string()
-                            .split_whitespace()
-                            .collect(), // TODO i think this can be done better
-                    );
-                });
-
-            match lines.len() {
-                0 => None,
-                _ => Some(lines),
-            }
-        }
-        Err(e) => {
-            panic!("{}", e);
-        }
-    }
-}
-
-fn tokenizer(code_bytes: Vec<String>) -> Vec<Token> {
-    let mut tokens = Vec::new();
-    code_bytes.into_iter().for_each(|byte| {
-        println!("b:{} ", byte);
-    });
-    //code_bytes.into_iter().for_each(|byte| {
-    //    match byte {
-    //        b'関' => tokens.push(Token::Function),
-    //        b'数' => tokens.push(Token::Int),
-    //        b'な' => tokens.push(Token::If),
-    //        _ => (),
-    //    }
-    //});
-    tokens
+fn tokenizer(contents: String) -> Option<Vec<Expression>> {
+    tokenization::tokenize_int(&contents)
 }
 
 fn main() {
@@ -77,7 +76,10 @@ fn main() {
     }
     let source_file = Path::new(&args[1]);
     match check_file(source_file) {
-        Ok(_) => tokenizer(read_file(source_file).unwrap()),
+        Ok(_) => {
+            let tokens = tokenizer(std::fs::read_to_string(source_file).unwrap()).unwrap();
+            println!("{:?}", tokens);
+        },
         Err(e) => panic!("{}", e),
     };
 }
