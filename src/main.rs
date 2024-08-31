@@ -1,9 +1,11 @@
 #![allow(dead_code)]
+
+mod reserved;
 mod tokenization;
 
 extern crate core;
 
-use std::fmt;
+use crate::reserved::{ReservedWord, Separator};
 use std::path::Path;
 
 #[derive(Debug)]
@@ -13,52 +15,18 @@ enum Literal {
 }
 
 #[derive(Debug)]
-enum TokenMembers {
+enum Token {
     Identifier(String),
     Literal(Literal),
+    Separator(Separator),
     Operator(char),
-    Separator(char),
+    WhiteSpace(char),
 }
 
 #[derive(Debug)]
 struct Expression {
-    token: ReservedWords,
-    members: Vec<TokenMembers>,
-}
-
-#[derive(Debug)]
-enum ReservedWords {
-    Function,
-    Int,
-    Str,
-    If,
-}
-
-const FUNCTION: &str = "関数"; // かんすう
-const INT: &str = "整数"; // なら
-const IF: &str = "なら"; // せいすう
-const STR: &str = "文字列"; // もじれつ
-
-impl ReservedWords {
-    fn as_str(&self) -> &str {
-        match self {
-            ReservedWords::Function => FUNCTION,
-            ReservedWords::If => IF,
-            ReservedWords::Int => INT,
-            ReservedWords::Str => STR,
-        }
-    }
-}
-
-impl fmt::Display for ReservedWords {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            ReservedWords::Function => write!(f, "{}", FUNCTION),
-            ReservedWords::If => write!(f, "{}", IF),
-            ReservedWords::Int => write!(f, "{}", INT),
-            ReservedWords::Str => write!(f, "{}", STR),
-        }
-    }
+    token: ReservedWord,
+    members: Vec<Token>,
 }
 
 fn check_file(source_file: &Path) -> Result<String, String> {
