@@ -1,7 +1,59 @@
 use std::fmt;
+use std::fmt::Display;
 
-struct LexicalError {
-    message: String,
+#[derive(Debug)]
+pub enum Operator {
+    Assignment,
+    Sum,
+    Subtraction,
+    Multiplication,
+    Division,
+}
+
+const ASSIGNMENT: &str = "＝";
+const SUM: &str = "＋";
+const SUBTRACTION: &str = "ー";
+const MULTIPLICATION: &str = "＊";
+const DIVISION: &str = "／";
+
+impl Operator {
+    fn as_str(&self) -> &str {
+        match self {
+            Operator::Assignment => ASSIGNMENT,
+            Operator::Sum => SUM,
+            Operator::Subtraction => SUBTRACTION,
+            Operator::Multiplication => MULTIPLICATION,
+            Operator::Division => DIVISION,
+        }
+    }
+}
+
+impl Display for Operator {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let matched = match self {
+            Operator::Assignment => ASSIGNMENT,
+            Operator::Sum => SUM,
+            Operator::Subtraction => SUBTRACTION,
+            Operator::Multiplication => MULTIPLICATION,
+            Operator::Division => DIVISION,
+        };
+        write!(f, "{}", matched)
+    }
+}
+
+impl TryFrom<&str> for Operator {
+    type Error = String;
+
+    fn try_from(word: &str) -> Result<Operator, Self::Error> {
+        match word {
+            ASSIGNMENT => Ok(Operator::Assignment),
+            SUM => Ok(Operator::Sum),
+            SUBTRACTION => Ok(Operator::Subtraction),
+            MULTIPLICATION => Ok(Operator::Multiplication),
+            DIVISION => Ok(Operator::Division),
+            identifier => Err(String::from(identifier)),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -37,6 +89,38 @@ impl Separator {
     }
 }
 
+impl Display for Separator {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let matched = match self {
+            Separator::Terminator => TERMINATOR,
+            Separator::OpenParentheses => OPEN_PARENTHESES,
+            Separator::CloseParentheses => CLOSED_PARENTHESES,
+            Separator::OpenQuotation => OPEN_QUOTATION,
+            Separator::CloseQuotation => CLOSED_QUOTATION,
+            Separator::OpenCurlyBraces => OPEN_CURLY_BRACES,
+            Separator::CloseCurlyBraces => CLOSED_CURLY_BRACES,
+        };
+        write!(f, "{}", matched)
+    }
+}
+
+impl TryFrom<&str> for Separator {
+    type Error = String;
+
+    fn try_from(word: &str) -> Result<Separator, Self::Error> {
+        match word {
+            TERMINATOR => Ok(Separator::Terminator),
+            OPEN_PARENTHESES => Ok(Separator::OpenParentheses),
+            CLOSED_PARENTHESES => Ok(Separator::CloseParentheses),
+            OPEN_QUOTATION => Ok(Separator::OpenQuotation),
+            CLOSED_QUOTATION => Ok(Separator::CloseQuotation),
+            OPEN_CURLY_BRACES => Ok(Separator::OpenCurlyBraces),
+            CLOSED_CURLY_BRACES => Ok(Separator::CloseCurlyBraces),
+            identifier => Err(String::from(identifier)),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum ReservedWord {
     Function,
@@ -61,7 +145,7 @@ impl ReservedWord {
     }
 }
 
-impl fmt::Display for ReservedWord {
+impl Display for ReservedWord {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let matched = match self {
             ReservedWord::Function => FUNCTION,

@@ -18,10 +18,29 @@ enum Literal {
 #[derive(Debug)]
 enum Token {
     Identifier(String),
-    Literal(Literal),
+    Assignment(Assignment),
     Separator(Separator),
     Operator(char),
     WhiteSpace(char),
+}
+
+#[derive(Debug)]
+enum Assignment {
+    Literal(Literal),
+    Identifier(String),
+}
+
+impl Assignment {
+
+    fn try_from(assignment: &str) -> Result<Self, Self> {
+        if let Ok(int) = assignment.parse::<i32>() {
+            Ok(Assignment::Literal(Literal::Int(int)))
+        } else if assignment.chars().next() == Some('「') {
+            Ok(Assignment::Literal(Literal::Str(String::from(assignment))))
+        } else {
+            Err(Assignment::Identifier(String::from(assignment)))
+        }
+    }
 }
 
 #[derive(Debug)]
