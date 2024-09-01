@@ -82,7 +82,7 @@ impl TryFrom<&str> for ReservedWord {
             IF => Ok(ReservedWord::If),
             INT => Ok(ReservedWord::Int),
             STR => Ok(ReservedWord::Str),
-            _ => Err(String::from("Not a reserved word")),
+            identifier => Err(String::from(identifier)),
         }
     }
 }
@@ -96,7 +96,7 @@ impl TryFrom<String> for ReservedWord {
             IF => Ok(ReservedWord::If),
             INT => Ok(ReservedWord::Int),
             STR => Ok(ReservedWord::Str),
-            _ => Err(String::from("Not a reserved word")),
+            identifier => Err(String::from(identifier)),
         }
     }
 }

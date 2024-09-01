@@ -6,6 +6,7 @@ mod tokenization;
 extern crate core;
 
 use crate::reserved::{ReservedWord, Separator};
+use crate::tokenization::get_token;
 use std::path::Path;
 
 #[derive(Debug)]
@@ -44,11 +45,12 @@ fn check_file(source_file: &Path) -> Result<String, String> {
     }
 }
 
-fn tokenizer(contents: String) -> Option<Vec<Vec<Expression>>> {
-    Some(vec![
-        tokenization::tokenize_int(&contents)?,
-        tokenization::tokenize_str(&contents)?,
-    ])
+fn tokenizer(contents: String) -> Vec<Option<Expression>> {
+    //Some(vec![
+    //    tokenization::tokenize_int(&contents)?,
+    //    tokenization::tokenize_str(&contents)?,
+    //])
+    get_token(&contents)
 }
 
 fn main() {
@@ -60,17 +62,15 @@ fn main() {
     let source_file = Path::new(&args[1]);
     match check_file(source_file) {
         Ok(_) => {
-            match tokenizer(std::fs::read_to_string(source_file).unwrap()) {
-                Some(x) => x,
-                None => panic!("Lexical error"), // todo form error
-            }
-            .iter()
-            .for_each(|tokens| {
-                tokens.iter().for_each(|token| {
-                    println!("{:?}", token);
+            tokenizer(std::fs::read_to_string(source_file).unwrap())
+                .iter()
+                .for_each(|expression| {
+                    println!("{:?}", expression);
                 });
-            });
         }
-        Err(e) => panic!("{}", e),
-    };
+        Err(e) => {
+            println!("{}", e);
+            std::process::exit(1);
+        }
+    }
 }
