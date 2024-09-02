@@ -127,12 +127,14 @@ pub enum ReservedWord {
     Int,
     Str,
     If,
+    Bool,
 }
 
 const FUNCTION: &str = "関数"; // かんすう
-const INT: &str = "整数"; // なら
-const IF: &str = "なら"; // せいすう
+const INT: &str = "整数"; // せいすう
+const IF: &str = "なら";
 const STR: &str = "文字列"; // もじれつ
+const BOOL: &str = "真偽値"; // しんぎち
 
 impl ReservedWord {
     fn as_str(&self) -> &str {
@@ -141,6 +143,7 @@ impl ReservedWord {
             ReservedWord::If => IF,
             ReservedWord::Int => INT,
             ReservedWord::Str => STR,
+            ReservedWord::Bool => BOOL,
         }
     }
 }
@@ -152,6 +155,7 @@ impl Display for ReservedWord {
             ReservedWord::If => IF,
             ReservedWord::Int => INT,
             ReservedWord::Str => STR,
+            ReservedWord::Bool => BOOL,
         };
         write!(f, "{}", matched)
     }
@@ -166,6 +170,7 @@ impl TryFrom<&str> for ReservedWord {
             IF => Ok(ReservedWord::If),
             INT => Ok(ReservedWord::Int),
             STR => Ok(ReservedWord::Str),
+            BOOL => Ok(ReservedWord::Bool),
             identifier => Err(String::from(identifier)),
         }
     }
@@ -180,6 +185,7 @@ impl TryFrom<String> for ReservedWord {
             IF => Ok(ReservedWord::If),
             INT => Ok(ReservedWord::Int),
             STR => Ok(ReservedWord::Str),
+            BOOL => Ok(ReservedWord::Bool),
             identifier => Err(String::from(identifier)),
         }
     }

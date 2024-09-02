@@ -31,7 +31,6 @@ enum Assignment {
 }
 
 impl Assignment {
-
     fn try_from(assignment: &str) -> Result<Self, Self> {
         if let Ok(int) = assignment.parse::<i32>() {
             Ok(Assignment::Literal(Literal::Int(int)))
