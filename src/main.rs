@@ -18,7 +18,6 @@ enum Literal {
 #[derive(Debug)]
 enum Token {
     Identifier(String),
-    Assignment(Assignment),
     Separator(Separator),
     Operator(char),
     WhiteSpace(char),
@@ -43,9 +42,17 @@ impl Assignment {
 }
 
 #[derive(Debug)]
-struct Expression {
+struct VarDeclaration {
     token: ReservedWord,
-    members: Vec<Token>,
+    identifier: Token,
+    operator: Token,
+    assigment: Assignment,
+    separator: Token,
+}
+
+#[derive(Debug)]
+enum Expression {
+    Var,
 }
 
 fn check_file(source_file: &Path) -> Result<String, String> {
@@ -63,7 +70,7 @@ fn check_file(source_file: &Path) -> Result<String, String> {
     }
 }
 
-fn tokenizer(contents: String) -> Vec<Option<Expression>> {
+fn tokenizer(contents: String) -> Vec<Option<VarDeclaration>> {
     //Some(vec![
     //    tokenization::tokenize_int(&contents)?,
     //    tokenization::tokenize_str(&contents)?,
@@ -82,6 +89,7 @@ fn main() {
         Ok(_) => {
             tokenizer(std::fs::read_to_string(source_file).unwrap())
                 .iter()
+                .flatten()
                 .for_each(|expression| {
                     println!("{:?}", expression);
                 });
