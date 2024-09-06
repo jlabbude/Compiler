@@ -32,7 +32,11 @@ impl TryFrom<String> for Literal {
         )) {
             Ok(Literal::Str(Str {
                 open_quote: Separator::OpenQuotation,
-                content: assignment.chars().skip(1).take(assignment.chars().count() - 2).collect(),
+                content: assignment
+                    .chars()
+                    .skip(1)
+                    .take(assignment.chars().count() - 2)
+                    .collect(),
                 close_quote: Separator::CloseQuotation,
             }))
         } else {
@@ -45,13 +49,7 @@ impl Display for Literal {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Literal::Int(int) => write!(f, "{}", int),
-            Literal::Str(str) => write!(
-                f,
-                "{}{}{}",
-                str.open_quote,
-                str.content,
-                str.close_quote
-            ),
+            Literal::Str(str) => write!(f, "{}{}{}", str.open_quote, str.content, str.close_quote),
         }
     }
 }
@@ -81,12 +79,10 @@ impl Token {
                     Ok(separator) => Ok(Token::Separator(separator)),
                     Err(token) => match Operator::try_from(token.as_str()) {
                         Ok(operator) => Ok(Token::Operator(operator)),
-                        Err(token) => {
-                            match tokenize_identifier(token.as_str()) {
-                                Ok(identifier) => Ok(Token::Identifier(identifier)),
-                                Err(error) => Err(error),
-                            }
-                        }
+                        Err(token) => match tokenize_identifier(token.as_str()) {
+                            Ok(identifier) => Ok(Token::Identifier(identifier)),
+                            Err(error) => Err(error),
+                        },
                     },
                 },
             },

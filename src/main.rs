@@ -1,12 +1,11 @@
 extern crate core;
 
+use crate::lexer::reserved::Separator;
 use crate::lexer::tokenization::tokenize;
-use crate::lexer::tokens::Token;
+use crate::lexer::tokens::{Literal, Token};
 use std::path::Path;
 
 mod lexer;
-
-type Expression = Vec<Token>;
 
 fn check_file(source_file: &Path) -> Result<String, String> {
     println!("{}をコンパイルする", source_file.display());
@@ -34,31 +33,41 @@ fn main() {
         Ok(_) => {
             tokenize(&std::fs::read_to_string(source_file).unwrap())
                 .iter()
-                .for_each(|expression| {
-                    println!("{expression:#?}");
-                    match expression {
-                        Token::ReservedWord(word) => {
-                            println!(r#"Value: "{}""#, word);
+                .for_each(|expression| match expression {
+                    Token::ReservedWord(word) => {
+                        println!("{expression:?}");
+                        println!(r#"Value: "{word}""#);
+                        println!("------------");
+                    }
+                    Token::Literal(literal) => {
+                        match literal {
+                            Literal::Str(_) => println!("{expression:#?}"),
+                            _ => println!("{expression:?}"),
+                        }
+                        println!(r#"Value: "{literal}""#);
+                        println!("------------");
+                    }
+                    Token::Identifier(ident) => {
+                        println!("{expression:?}");
+                        println!(r#"Value: "{ident}""#);
+                        println!("------------");
+                    }
+                    Token::Separator(separator) => match separator {
+                        Separator::NewLine | Separator::WhiteSpace => {}
+                        _ => {
+                            println!("{expression:?}");
+                            println!(r#"Value: "{}""#, separator.as_str().trim());
                             println!("------------");
                         }
-                        Token::Literal(literal) => {
-                            println!(r#"Value: "{}""#, literal);
-                            println!("------------");
-                        }
-                        Token::Identifier(ident) => {
-                            println!(r#"Value: "{}""#, ident);
-                            println!("------------");
-                        }
-                        Token::Separator(separator) => {
-                            println!(r#"Value: "{}""#, separator.to_string().trim());
-                            println!("------------");
-                        }
-                        Token::Operator(operator) => {
-                            println!(r#"Value: "{}""#, operator);
-                            println!("------------");
-                        }
+                    },
+                    Token::Operator(operator) => {
+                        println!("{expression:?}");
+                        println!(r#"Value: "{operator}""#);
+                        println!("------------");
                     }
                 });
+            println!("\nLexical analysis completed!!");
+            std::process::exit(0);
         }
         Err(e) => {
             println!("{}", e);

@@ -71,8 +71,9 @@ const DOT: &str = "。";
 const NEW_LINE: &str = "\n";
 const REGULAR_SPACE: &str = " ";
 const JP_SPACE: &str = "　";
+
 impl Separator {
-    fn as_str(&self) -> &str {
+    pub fn as_str(&self) -> &str {
         match self {
             Separator::Terminator => TERMINATOR,
             Separator::OpenParentheses => OPEN_PARENTHESES,
