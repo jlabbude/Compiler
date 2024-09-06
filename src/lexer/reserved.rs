@@ -16,18 +16,6 @@ const SUBTRACTION: &str = "ー";
 const MULTIPLICATION: &str = "＊";
 const DIVISION: &str = "／";
 
-impl Operator {
-    fn as_str(&self) -> &str {
-        match self {
-            Operator::Assignment => ASSIGNMENT,
-            Operator::Sum => SUM,
-            Operator::Subtraction => SUBTRACTION,
-            Operator::Multiplication => MULTIPLICATION,
-            Operator::Division => DIVISION,
-        }
-    }
-}
-
 impl Display for Operator {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let matched = match self {
@@ -51,12 +39,12 @@ impl TryFrom<&str> for Operator {
             SUBTRACTION => Ok(Operator::Subtraction),
             MULTIPLICATION => Ok(Operator::Multiplication),
             DIVISION => Ok(Operator::Division),
-            identifier => Err(String::from(identifier)),
+            other_token => Err(String::from(other_token)),
         }
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Separator {
     Terminator,
     OpenParentheses,
@@ -65,6 +53,10 @@ pub enum Separator {
     CloseQuotation,
     OpenCurlyBraces,
     CloseCurlyBraces,
+    Comma,
+    Dot,
+    NewLine,
+    WhiteSpace,
 }
 
 const TERMINATOR: &str = "；";
@@ -74,7 +66,11 @@ const OPEN_QUOTATION: &str = "「";
 const CLOSED_QUOTATION: &str = "」";
 const OPEN_CURLY_BRACES: &str = "｛";
 const CLOSED_CURLY_BRACES: &str = "｝";
-
+const COMMA: &str = "、";
+const DOT: &str = "。";
+const NEW_LINE: &str = "\n";
+const REGULAR_SPACE: &str = " ";
+const JP_SPACE: &str = "　";
 impl Separator {
     fn as_str(&self) -> &str {
         match self {
@@ -85,6 +81,10 @@ impl Separator {
             Separator::CloseQuotation => CLOSED_QUOTATION,
             Separator::OpenCurlyBraces => OPEN_CURLY_BRACES,
             Separator::CloseCurlyBraces => CLOSED_CURLY_BRACES,
+            Separator::Comma => COMMA,
+            Separator::Dot => DOT,
+            Separator::NewLine => NEW_LINE,
+            Separator::WhiteSpace => REGULAR_SPACE,
         }
     }
 }
@@ -99,6 +99,10 @@ impl Display for Separator {
             Separator::CloseQuotation => CLOSED_QUOTATION,
             Separator::OpenCurlyBraces => OPEN_CURLY_BRACES,
             Separator::CloseCurlyBraces => CLOSED_CURLY_BRACES,
+            Separator::Comma => COMMA,
+            Separator::Dot => DOT,
+            Separator::NewLine => NEW_LINE,
+            Separator::WhiteSpace => REGULAR_SPACE,
         };
         write!(f, "{}", matched)
     }
@@ -116,7 +120,12 @@ impl TryFrom<&str> for Separator {
             CLOSED_QUOTATION => Ok(Separator::CloseQuotation),
             OPEN_CURLY_BRACES => Ok(Separator::OpenCurlyBraces),
             CLOSED_CURLY_BRACES => Ok(Separator::CloseCurlyBraces),
-            identifier => Err(String::from(identifier)),
+            COMMA => Ok(Separator::Comma),
+            DOT => Ok(Separator::Dot),
+            REGULAR_SPACE => Ok(Separator::WhiteSpace),
+            JP_SPACE => Ok(Separator::WhiteSpace),
+            NEW_LINE => Ok(Separator::NewLine),
+            other_token => Err(String::from(other_token)),
         }
     }
 }
@@ -135,18 +144,6 @@ const INT: &str = "整数"; // せいすう
 const IF: &str = "なら";
 const STR: &str = "文字列"; // もじれつ
 const BOOL: &str = "真偽値"; // しんぎち
-
-impl ReservedWord {
-    fn as_str(&self) -> &str {
-        match self {
-            ReservedWord::Function => FUNCTION,
-            ReservedWord::If => IF,
-            ReservedWord::Int => INT,
-            ReservedWord::Str => STR,
-            ReservedWord::Bool => BOOL,
-        }
-    }
-}
 
 impl Display for ReservedWord {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
