@@ -1,4 +1,3 @@
-
 extern crate core;
 
 use crate::lexer::tokenization::tokenize;
@@ -24,10 +23,6 @@ fn check_file(source_file: &Path) -> Result<String, String> {
     }
 }
 
-fn tokenizer(contents: String) -> Expression {
-    tokenize(&contents)
-}
-
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 2 {
@@ -37,7 +32,7 @@ fn main() {
     let source_file = Path::new(&args[1]);
     match check_file(source_file) {
         Ok(_) => {
-            tokenizer(std::fs::read_to_string(source_file).unwrap())
+            tokenize(&std::fs::read_to_string(source_file).unwrap())
                 .iter()
                 .for_each(|expression| {
                     println!("{expression:#?}");
