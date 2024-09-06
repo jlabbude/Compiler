@@ -1,3 +1,3 @@
-[ ] - Lexical analysis
-[ ] - Syntax analysis
-[ ] - Semantic analysis
+- [ ] Lexical analysis
+- [ ] Syntax analysis
+- [ ] Semantic analysis
