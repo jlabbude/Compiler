@@ -1,0 +1,13 @@
+ReservedWord(Function) _ Identifier("今年") Separator(OpenParentheses) ReservedWord(Int) _ Identifier("暑い") Separator(Comma) _ ReservedWord(Bool) _ Identifier("寒い") Separator(CloseParentheses) Separator(OpenCurlyBraces) 
+_ _ _ _ ReservedWord(Int) _ Identifier("一") _ Operator(Assignment) _ Literal(Int(1)) Separator(Terminator) 
+_ _ _ _ ReservedWord(Int) _ _ Identifier("二") _ Operator(Assignment) _ Literal(Int(2)) Separator(Terminator) 
+_ _ _ _ Identifier("一") _ Operator(Assignment) _ Identifier("二") Separator(Terminator) 
+
+_ _ _ _ Identifier("文字") _ Identifier("ストリンッグ") _ _ Operator(Assignment) _ Literal(Str(Str { open_quote: OpenQuotation, content: "aa aa as  da 34q42", close_quote: CloseQuotation })) Separator(Terminator) 
+
+_ _ _ _ ReservedWord(If) Separator(OpenParentheses) Identifier("暑い") _ Operator(Equality) _ Literal(Int(1)) Separator(CloseParentheses) Separator(OpenCurlyBraces) 
+_ _ _ _ _ _ _ _ Identifier("寒い") _ Operator(Assignment) _ Literal(Bool(False)) Separator(Terminator) 
+_ _ _ _ Separator(CloseCurlyBraces) 
+Separator(CloseCurlyBraces) 
+
+Lexical analysis completed successfully!!

@@ -8,6 +8,8 @@ pub enum Operator {
     Subtraction,
     Multiplication,
     Division,
+    Equality,
+    Inequality,
 }
 
 const ASSIGNMENT: &str = "＝";
@@ -15,6 +17,8 @@ const SUM: &str = "＋";
 const SUBTRACTION: &str = "ー";
 const MULTIPLICATION: &str = "＊";
 const DIVISION: &str = "／";
+const EQUALITY: &str = "＝＝";
+const INEQUALITY: &str = "！＝";
 
 impl Display for Operator {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -24,6 +28,8 @@ impl Display for Operator {
             Operator::Subtraction => SUBTRACTION,
             Operator::Multiplication => MULTIPLICATION,
             Operator::Division => DIVISION,
+            Operator::Equality => EQUALITY,
+            Operator::Inequality => INEQUALITY,
         };
         write!(f, "{}", matched)
     }
@@ -39,6 +45,8 @@ impl TryFrom<&str> for Operator {
             SUBTRACTION => Ok(Operator::Subtraction),
             MULTIPLICATION => Ok(Operator::Multiplication),
             DIVISION => Ok(Operator::Division),
+            EQUALITY => Ok(Operator::Equality),
+            INEQUALITY => Ok(Operator::Inequality),
             other_token => Err(String::from(other_token)),
         }
     }
@@ -142,7 +150,7 @@ pub enum ReservedWord {
 
 const FUNCTION: &str = "関数"; // かんすう
 const INT: &str = "整数"; // せいすう
-const IF: &str = "なら";
+const IF: &str = "もし";
 const STR: &str = "文字列"; // もじれつ
 const BOOL: &str = "真偽値"; // しんぎち
 

@@ -11,9 +11,19 @@ pub struct Str {
 }
 
 #[derive(Debug)]
+pub enum Bool {
+    False,
+    True,
+}
+
+const FALSE: &str = "偽";
+const TRUE: &str = "真";
+
+#[derive(Debug)]
 pub enum Literal {
     Int(i32),
     Str(Str),
+    Bool(Bool),
 }
 
 impl TryFrom<String> for Literal {
@@ -21,7 +31,14 @@ impl TryFrom<String> for Literal {
     fn try_from(assignment: String) -> Result<Self, Self::Error> {
         if let Ok(int) = assignment.parse::<i32>() {
             Ok(Literal::Int(int))
-        } else if assignment.chars().next().eq(&Some(
+        } else if assignment.eq(FALSE) || assignment.eq(TRUE) {
+            Ok(Literal::Bool(match assignment.as_str() {
+                FALSE => Bool::False,
+                TRUE => Bool::True,
+                _ => unreachable!(),
+            }))
+        }
+        else if assignment.chars().next().eq(&Some(
             Separator::OpenQuotation.to_string().chars().next().unwrap(),
         )) && assignment.chars().last().eq(&Some(
             Separator::CloseQuotation
@@ -50,6 +67,10 @@ impl Display for Literal {
         match self {
             Literal::Int(int) => write!(f, "{}", int),
             Literal::Str(str) => write!(f, "{}{}{}", str.open_quote, str.content, str.close_quote),
+            Literal::Bool(bool) => match bool {
+                Bool::False => write!(f, "{}", FALSE),
+                Bool::True => write!(f, "{}", TRUE),
+            },
         }
     }
 }

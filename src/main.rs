@@ -1,20 +1,19 @@
+#![allow(dead_code)]
 extern crate core;
 
 use crate::lexer::reserved::Separator;
 use crate::lexer::tokenization::tokenize;
-use crate::lexer::tokens::{Literal, Token};
+use crate::lexer::tokens::Token;
 use std::path::Path;
 
 mod lexer;
 
-fn check_file(source_file: &Path) -> Result<String, String> {
-    println!("{}をコンパイルする", source_file.display());
+fn check_file(source_file: &Path) -> Result<(), String> {
     match source_file.exists() {
         false => Err(format!("{}見つかりません", source_file.display())),
         true => {
-            println!("{}が見つかりました", source_file.display());
             if source_file.extension().unwrap().to_str().unwrap().eq("nh") {
-                Ok("ファイルフォーマットが正しいです".to_string())
+                Ok(())
             } else {
                 Err("ファイルフォーマットが正しくありません".to_string())
             }
@@ -34,39 +33,17 @@ fn main() {
             tokenize(&std::fs::read_to_string(source_file).unwrap())
                 .iter()
                 .for_each(|expression| match expression {
-                    Token::ReservedWord(word) => {
-                        println!("{expression:?}");
-                        println!(r#"Value: "{word}""#);
-                        println!("------------");
-                    }
-                    Token::Literal(literal) => {
-                        match literal {
-                            Literal::Str(_) => println!("{expression:#?}"),
-                            _ => println!("{expression:?}"),
-                        }
-                        println!(r#"Value: "{literal}""#);
-                        println!("------------");
-                    }
-                    Token::Identifier(ident) => {
-                        println!("{expression:?}");
-                        println!(r#"Value: "{ident}""#);
-                        println!("------------");
-                    }
+                    Token::ReservedWord(_) => print!("{expression:?} "),
+                    Token::Literal(_) => print!("{expression:?} "),
+                    Token::Identifier(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
-                        Separator::NewLine | Separator::WhiteSpace => {}
-                        _ => {
-                            println!("{expression:?}");
-                            println!(r#"Value: "{}""#, separator.as_str().trim());
-                            println!("------------");
-                        }
+                        Separator::NewLine => println!(),
+                        Separator::WhiteSpace => print!("_ "),
+                        _ => print!("{expression:?} "),
                     },
-                    Token::Operator(operator) => {
-                        println!("{expression:?}");
-                        println!(r#"Value: "{operator}""#);
-                        println!("------------");
-                    }
+                    Token::Operator(_) => print!("{expression:?} "),
                 });
-            println!("\nLexical analysis completed!!");
+            println!("\n\nLexical analysis completed successfully!!");
             std::process::exit(0);
         }
         Err(e) => {
