@@ -1,4 +1,4 @@
-use crate::lexer::reserved::Separator;
+use crate::lexer::reserved::{Operator, Separator};
 use crate::lexer::tokens::Token;
 use regex::bytes::Regex;
 use std::io::Read;
@@ -18,7 +18,7 @@ pub fn tokenize_identifier(identifier: &str) -> Result<String, LexicalError> {
 
 fn split_code(code: &str) -> IntoIter<String> {
     let re = Regex::new(&format!(
-        r"(?:「[\S\s]*」|[{}{}{}{}{}{}{}{}{}\s])",
+        r"(?:「[\S\s]*」|[{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}\s])",
         Separator::OpenQuotation,
         Separator::CloseQuotation,
         Separator::OpenCurlyBraces,
@@ -27,7 +27,18 @@ fn split_code(code: &str) -> IntoIter<String> {
         Separator::CloseParentheses,
         Separator::Terminator,
         Separator::Comma,
-        Separator::Dot
+        Separator::Dot,
+        Operator::Assignment,
+        Operator::Sum,
+        Operator::Subtraction,
+        Operator::Multiplication,
+        Operator::Division,
+        Operator::Equality,
+        Operator::Inequality,
+        Operator::GreaterThan,
+        Operator::LessThan,
+        Operator::GreaterThanOrEqual,
+        Operator::LessThanOrEqual,
     ))
     .unwrap();
     let mut finalvec: Vec<String> = Vec::new();

@@ -33,15 +33,15 @@ fn main() {
             tokenize(&std::fs::read_to_string(source_file).unwrap())
                 .iter()
                 .for_each(|expression| match expression {
-                    Token::ReservedWord(_) => print!("{expression:?} "),
-                    Token::Literal(_) => print!("{expression:?} "),
-                    Token::Identifier(_) => print!("{expression:?} "),
+                    Token::ReservedWord(_)
+                    | Token::Literal(_)
+                    | Token::Identifier(_)
+                    | Token::Operator(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
                         Separator::NewLine => println!(),
                         Separator::WhiteSpace => print!("_ "),
                         _ => print!("{expression:?} "),
                     },
-                    Token::Operator(_) => print!("{expression:?} "),
                 });
             println!("\n\nLexical analysis completed successfully!!");
             std::process::exit(0);

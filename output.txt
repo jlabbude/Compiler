@@ -1,12 +1,14 @@
-ReservedWord(Function) _ Identifier("今年") Separator(OpenParentheses) ReservedWord(Int) _ Identifier("暑い") Separator(Comma) _ ReservedWord(Bool) _ Identifier("寒い") Separator(CloseParentheses) Separator(OpenCurlyBraces) 
-_ _ _ _ ReservedWord(Int) _ Identifier("一") _ Operator(Assignment) _ Literal(Int(1)) Separator(Terminator) 
-_ _ _ _ ReservedWord(Int) _ _ Identifier("二") _ Operator(Assignment) _ Literal(Int(2)) Separator(Terminator) 
+ReservedWord(Function) _ ReservedWord(Bool) _ Identifier("天気＿チェック") Separator(OpenParentheses) ReservedWord(Int) _ Identifier("温度") Separator(Comma) _ ReservedWord(Bool) _ Identifier("寒い") Separator(CloseParentheses) Separator(OpenCurlyBraces) 
+_ _ _ _ ReservedWord(Int) _ Identifier("一") _ Operator(Assignment) _ Literal(Int(2147483647)) Separator(Terminator) 
+_ _ _ _ ReservedWord(Int) _ _ Identifier("二") _ Operator(Assignment) _ Literal(Int(2)) Operator(Subtraction) Literal(Int(1)) Separator(Terminator) 
 _ _ _ _ Identifier("一") _ Operator(Assignment) _ Identifier("二") Separator(Terminator) 
 
-_ _ _ _ Identifier("文字") _ Identifier("ストリンッグ") _ _ Operator(Assignment) _ Literal(Str(Str { open_quote: OpenQuotation, content: "aa aa as  da 34q42", close_quote: CloseQuotation })) Separator(Terminator) 
+_ _ _ _ Identifier("文字") _ Identifier("ストリンッグ") _ _ Operator(Assignment) _ Literal(Str(Str { open_quote: OpenQuotation, content: "s tr ingテスト", close_quote: CloseQuotation })) Separator(Terminator) 
 
-_ _ _ _ ReservedWord(If) Separator(OpenParentheses) Identifier("暑い") _ Operator(Equality) _ Literal(Int(1)) Separator(CloseParentheses) Separator(OpenCurlyBraces) 
-_ _ _ _ _ _ _ _ Identifier("寒い") _ Operator(Assignment) _ Literal(Bool(False)) Separator(Terminator) 
+_ _ _ _ ReservedWord(If) Separator(OpenParentheses) Identifier("温度") _ Operator(LessThan) Operator(Assignment) _ Literal(Int(20)) Separator(CloseParentheses) Separator(OpenCurlyBraces) 
+_ _ _ _ _ _ _ _ Identifier("返す") _ Literal(Bool(True)) Separator(Terminator) 
+_ _ _ _ Separator(CloseCurlyBraces) _ Identifier("それとも") _ Separator(OpenCurlyBraces) 
+_ _ _ _ _ _ _ _ Identifier("返す") _ Literal(Bool(False)) Separator(Terminator) 
 _ _ _ _ Separator(CloseCurlyBraces) 
 Separator(CloseCurlyBraces) 
 

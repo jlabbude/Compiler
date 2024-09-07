@@ -37,8 +37,7 @@ impl TryFrom<String> for Literal {
                 TRUE => Bool::True,
                 _ => unreachable!(),
             }))
-        }
-        else if assignment.chars().next().eq(&Some(
+        } else if assignment.chars().next().eq(&Some(
             Separator::OpenQuotation.to_string().chars().next().unwrap(),
         )) && assignment.chars().last().eq(&Some(
             Separator::CloseQuotation
@@ -89,10 +88,13 @@ impl Token {
         match ReservedWord::try_from(token) {
             Ok(reserved_word) => match reserved_word {
                 ReservedWord::Function => Ok(Token::ReservedWord(ReservedWord::Function)),
+                ReservedWord::Return => Ok(Token::ReservedWord(ReservedWord::Return)),
                 ReservedWord::If => Ok(Token::ReservedWord(ReservedWord::If)),
+                ReservedWord::Else => Ok(Token::ReservedWord(ReservedWord::Else)),
                 ReservedWord::Int => Ok(Token::ReservedWord(ReservedWord::Int)),
                 ReservedWord::Str => Ok(Token::ReservedWord(ReservedWord::Str)),
                 ReservedWord::Bool => Ok(Token::ReservedWord(ReservedWord::Bool)),
+                ReservedWord::Void => Ok(Token::ReservedWord(ReservedWord::Void)),
             },
             Err(token) => match Literal::try_from(token) {
                 Ok(literal) => Ok(Token::Literal(literal)),
