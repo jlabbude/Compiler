@@ -1,5 +1,5 @@
 ReservedWord(Function) _ ReservedWord(Bool) _ Identifier("天気＿チェック") Separator(OpenParentheses) ReservedWord(Int) _ Identifier("温度") Separator(Comma) _ ReservedWord(Bool) _ Identifier("寒い") Separator(CloseParentheses) Separator(OpenCurlyBraces) 
-_ _ _ _ ReservedWord(Int) _ Identifier("一") _ Operator(Assignment) _ Literal(Int(2147483647)) Separator(Terminator) 
+_ _ _ _ ReservedWord(Int) _ Identifier("一") _ Operator(Assignment) _ Literal(Int(2147483647)) Operator(Sum) Literal(Int(1)) Separator(Terminator) 
 _ _ _ _ ReservedWord(Int) _ _ Identifier("二") _ Operator(Assignment) _ Literal(Int(2)) Operator(Subtraction) Literal(Int(1)) Separator(Terminator) 
 _ _ _ _ Identifier("一") _ Operator(Assignment) _ Identifier("二") Separator(Terminator) 
 
