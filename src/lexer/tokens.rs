@@ -1,5 +1,5 @@
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokenization::{tokenize_identifier, LexicalError};
+use crate::lexer::tokenization::{tokenize_identifier, LexicalError, RawToken};
 use std::fmt;
 use std::fmt::Display;
 
@@ -84,7 +84,8 @@ pub enum Token {
 }
 
 impl Token {
-    pub fn try_from(token: String) -> Result<Self, LexicalError> {
+    pub fn try_from(raw_token: RawToken) -> Result<Self, LexicalError> {
+        let token = raw_token.1.to_string();
         match ReservedWord::try_from(token) {
             Ok(reserved_word) => match reserved_word {
                 ReservedWord::Function => Ok(Token::ReservedWord(ReservedWord::Function)),
@@ -102,7 +103,7 @@ impl Token {
                     Ok(separator) => Ok(Token::Separator(separator)),
                     Err(token) => match Operator::try_from(token.as_str()) {
                         Ok(operator) => Ok(Token::Operator(operator)),
-                        Err(token) => match tokenize_identifier(token.as_str()) {
+                        Err(_) => match tokenize_identifier(raw_token) {
                             Ok(identifier) => Ok(Token::Identifier(identifier)),
                             Err(error) => Err(error),
                         },
