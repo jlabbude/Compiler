@@ -1,8 +1,7 @@
 use crate::lexer::reserved::{Operator, Separator};
 use crate::lexer::tokens::Token;
 use regex::bytes::Regex;
-use std::io::Read;
-use std::vec::IntoIter;
+use std::str;
 
 pub type LexicalError = String;
 
@@ -16,7 +15,7 @@ pub fn tokenize_identifier(identifier: &str) -> Result<String, LexicalError> {
     }
 }
 
-fn split_code(code: &str) -> IntoIter<String> {
+fn read_split_code_to_vec(code: &str) -> Vec<Option<&str>> {
     let re = Regex::new(&format!(
         r"(?:「[\S\s]*」|[{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}\s])",
         Separator::OpenQuotation,
@@ -41,34 +40,32 @@ fn split_code(code: &str) -> IntoIter<String> {
         Operator::LessThanOrEqual,
     ))
     .unwrap();
-    let mut finalvec: Vec<String> = Vec::new();
+
     re.split(code.as_bytes())
         .zip(re.find_iter(code.as_bytes()))
-        .for_each(|(mut token, separator)| {
-            let mut token_string = String::new();
-            let mut separator_string = String::new();
-            token.read_to_string(&mut token_string).unwrap();
-            separator
-                .clone()
-                .as_bytes()
-                .read_to_string(&mut separator_string)
-                .unwrap();
-            if !token_string.is_empty() {
-                finalvec.push(token_string);
-            }
-            if !separator_string.is_empty() {
-                finalvec.push(separator_string);
-            }
-        });
-    finalvec.into_iter()
+        .flat_map(|(token, separator)| {
+            [
+                match token.len() {
+                    0 => None,
+                    _ => Some(str::from_utf8(token).unwrap()),
+                },
+                match separator.len() {
+                    0 => None,
+                    _ => Some(str::from_utf8(separator.as_bytes()).unwrap()),
+                },
+            ]
+        })
+        .collect()
 }
 
 pub fn tokenize(source_code_contents: &str) -> Vec<Token> {
-    split_code(source_code_contents)
-        .map(|token| match Token::try_from(token) {
+    read_split_code_to_vec(source_code_contents)
+        .iter()
+        .flatten()
+        .map(|token| match Token::try_from(token.to_string()) {
             Ok(token) => token,
             Err(e) => {
-                eprintln!("{}", e);
+                eprintln!("{e}");
                 std::process::exit(1);
             }
         })
