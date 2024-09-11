@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 itertools = "0.13.0"
 regex = "1.10.6"
+reserved_proc_macro = { path = "reserved_proc_macro" }
