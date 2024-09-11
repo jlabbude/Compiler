@@ -11,12 +11,10 @@ mod lexer;
 fn check_file(source_file: &Path) -> Result<(), String> {
     match source_file.exists() {
         false => Err(format!("{}見つかりません", source_file.display())),
-        true => {
-            match source_file.extension().unwrap().to_str().unwrap() {
-                "nh" => Ok(()),
-                _ => Err("ファイルフォーマットが正しくありません".to_string()),
-            }
-        }
+        true => match source_file.extension().unwrap().to_str().unwrap() {
+            "nh" => Ok(()),
+            _ => Err("ファイルフォーマットが正しくありません".to_string()),
+        },
     }
 }
 

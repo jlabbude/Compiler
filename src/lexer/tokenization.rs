@@ -37,7 +37,7 @@ impl Splitter for str {
             Operator::GreaterThanOrEqual,
             Operator::LessThanOrEqual,
         ))
-            .unwrap();
+        .unwrap();
         let mut line_num: u32 = 1;
 
         re.split(self.as_bytes())
@@ -63,7 +63,6 @@ impl Splitter for str {
             })
             .collect()
     }
-
 }
 
 pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalError> {
@@ -73,7 +72,9 @@ pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalEr
         .is_match(identifier.as_bytes())
     {
         true => Ok(identifier.to_string()),
-        false => Err(format!(r#"Lexical error with: "{identifier}" at line {line_number}"#)),
+        false => Err(format!(
+            r#"Lexical error with: "{identifier}" at line {line_number}"#
+        )),
     }
 }
 
