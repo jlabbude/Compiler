@@ -12,10 +12,9 @@ fn check_file(source_file: &Path) -> Result<(), String> {
     match source_file.exists() {
         false => Err(format!("{}見つかりません", source_file.display())),
         true => {
-            if source_file.extension().unwrap().to_str().unwrap().eq("nh") {
-                Ok(())
-            } else {
-                Err("ファイルフォーマットが正しくありません".to_string())
+            match source_file.extension().unwrap().to_str().unwrap() {
+                "nh" => Ok(()),
+                _ => Err("ファイルフォーマットが正しくありません".to_string()),
             }
         }
     }
