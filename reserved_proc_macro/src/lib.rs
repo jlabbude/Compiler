@@ -1,6 +1,6 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::{parse_macro_input, Data, DeriveInput};
 
 #[proc_macro_derive(Reserved, attributes(word))]
@@ -13,31 +13,36 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
     if let Data::Enum(enum_data) = input.data {
         enum_data.variants.iter().for_each(|variant| {
             let ident = &variant.ident;
-            variant
-                .attrs
-                .iter()
-                .for_each(|attr| {
-                    if attr.path().is_ident("word") {
-                        let word = match attr.parse_args::<syn::LitStr>() {
-                            Ok(lit) => lit,
-                            Err(e) => panic!("{e}"), // todo implement
-                        }.value();
-                        match_display_arms.push(quote! {
+            variant.attrs.iter().for_each(|attr| {
+                if attr.path().is_ident("word") {
+                    match attr.parse_args::<syn::LitStr>() {
+                        Ok(lit) => vec![lit.value()],
+                        Err(_) => attr
+                            .parse_args::<syn::ExprArray>()
+                            .unwrap()
+                            .elems
+                            .iter()
+                            .map(|expr| expr.to_token_stream().to_string().replace("\"", ""))
+                            .collect::<Vec<String>>(), // sketchy
+                    }
+                        .iter()
+                        .for_each(|word| {
+                            match_display_arms.push(quote! {
                             #enum_name::#ident => #word,
                         });
 
-                        match_try_from_str_arms.push(quote! {
+                            match_try_from_str_arms.push(quote! {
                             #word => Ok(#enum_name::#ident),
                         });
 
-                        match_try_from_string_arms.push(quote! {
+                            match_try_from_string_arms.push(quote! {
                             #word => Ok(#enum_name::#ident),
                         });
-
-                    } else {
-                        panic!("All variants must have a #[word(\"...\")] attribute");
-                    }
-                });
+                        });
+                } else {
+                    panic!("All variants must have a #[word(\"...\")] attribute");
+                }
+            });
         });
     } else {
         panic!("#[derive(ReservedWordStrings)] is only applicable to enums");

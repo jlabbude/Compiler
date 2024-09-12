@@ -69,7 +69,6 @@ pub enum Separator {
     Dot,
     #[word("\n")]
     NewLine,
-    #[word(" ")] // temporary solution
-    #[word("　")]
+    #[word([" ", "　"])]
     WhiteSpace,
 }
