@@ -13,35 +13,31 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
     if let Data::Enum(enum_data) = input.data {
         enum_data.variants.iter().for_each(|variant| {
             let ident = &variant.ident;
-            match &variant
+            variant
                 .attrs
                 .iter()
-                .find_map(|attr| {
+                .for_each(|attr| {
                     if attr.path().is_ident("word") {
-                        attr.parse_args::<syn::LitStr>().ok()
+                        let word = match attr.parse_args::<syn::LitStr>() {
+                            Ok(lit) => lit,
+                            Err(e) => panic!("{e}"), // todo implement
+                        }.value();
+                        match_display_arms.push(quote! {
+                            #enum_name::#ident => #word,
+                        });
+
+                        match_try_from_str_arms.push(quote! {
+                            #word => Ok(#enum_name::#ident),
+                        });
+
+                        match_try_from_string_arms.push(quote! {
+                            #word => Ok(#enum_name::#ident),
+                        });
+
                     } else {
-                        None
+                        panic!("All variants must have a #[word(\"...\")] attribute");
                     }
-                })
-                .map(|lit_str| lit_str.value())
-            {
-                Some(word) => {
-                    match_display_arms.push(quote! {
-                        #enum_name::#ident => #word,
-                    });
-
-                    match_try_from_str_arms.push(quote! {
-                        #word => Ok(#enum_name::#ident),
-                    });
-
-                    match_try_from_string_arms.push(quote! {
-                        #word => Ok(#enum_name::#ident),
-                    })
-                }
-                None => {
-                    panic!("All variants must have a #[word(\"...\")] attribute");
-                }
-            }
+                });
         });
     } else {
         panic!("#[derive(ReservedWordStrings)] is only applicable to enums");
