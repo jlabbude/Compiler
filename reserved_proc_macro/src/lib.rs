@@ -39,12 +39,15 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
                         #enum_name::#ident => #word,
                     });
                 } else {
-                    panic!("All variants must have a #[word(\"...\")] attribute");
+                    panic!(
+                        "Declare each variant as Literal #[word(\"...\")] or \
+                        Array #[word([\"...\", \"...\"])] attribute"
+                    );
                 }
             });
         });
     } else {
-        panic!("#[derive(ReservedWordStrings)] is only applicable to enums");
+        panic!("#[derive(Reserved)] is only applicable to enums");
     }
     let display_impl = quote! {
         impl std::fmt::Display for #enum_name {
@@ -80,10 +83,9 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
             }
         }
     };
-    let expanded = quote! {
+    TokenStream::from(quote! {
         #display_impl
         #try_from_str_impl
         #try_from_string_impl
-    };
-    TokenStream::from(expanded)
+    })
 }
