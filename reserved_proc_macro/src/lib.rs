@@ -15,7 +15,7 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
             let ident = &variant.ident;
             variant.attrs.iter().for_each(|attr| {
                 if attr.path().is_ident("word") {
-                    match attr.parse_args::<syn::LitStr>() {
+                    let words = match attr.parse_args::<syn::LitStr>() {
                         Ok(lit) => vec![lit.value()],
                         Err(_) => attr
                             .parse_args::<syn::ExprArray>()
@@ -24,21 +24,20 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
                             .iter()
                             .map(|expr| expr.to_token_stream().to_string().replace("\"", ""))
                             .collect::<Vec<String>>(), // sketchy
-                    }
-                        .iter()
-                        .for_each(|word| {
-                            match_display_arms.push(quote! {
-                            #enum_name::#ident => #word,
-                        });
-
-                            match_try_from_str_arms.push(quote! {
+                    };
+                    words.iter().for_each(|word| {
+                        match_try_from_str_arms.push(quote! {
                             #word => Ok(#enum_name::#ident),
                         });
 
-                            match_try_from_string_arms.push(quote! {
+                        match_try_from_string_arms.push(quote! {
                             #word => Ok(#enum_name::#ident),
                         });
-                        });
+                    });
+                    let word = &words[0];
+                    match_display_arms.push(quote! {
+                        #enum_name::#ident => #word,
+                    });
                 } else {
                     panic!("All variants must have a #[word(\"...\")] attribute");
                 }

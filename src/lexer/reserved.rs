@@ -1,4 +1,3 @@
-#![allow(unreachable_patterns)]
 use reserved_proc_macro::Reserved;
 
 #[derive(Reserved, Debug)]
