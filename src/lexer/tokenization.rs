@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::lexer::reserved::{Operator, Separator};
 use crate::lexer::tokens::Token;
 use regex::bytes::Regex;
@@ -8,12 +9,14 @@ pub type LexicalError = String;
 /// Tuple: (line number, raw token)
 pub type RawToken<'a> = (u32, &'a str);
 
-trait Splitter {
-    fn read_split_code_to_vec(&self) -> Vec<Option<RawToken>>;
+pub trait Splitter {
+    fn split_code(&self) -> Vec<Option<RawToken>>;
+    fn split_and_parse_jp_numerals(&self) -> Result<i32, &Self>;
 }
 
 impl Splitter for str {
-    fn read_split_code_to_vec(&self) -> Vec<Option<RawToken>> {
+    /// Splits the expected code as a &str to all Separators and Operators
+    fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
             r"(?:「[\S\s]*」|[{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}\s])",
             Separator::OpenQuotation,
@@ -63,6 +66,28 @@ impl Splitter for str {
             })
             .collect()
     }
+
+    fn split_and_parse_jp_numerals(&self) -> Result<i32, &str> {
+        let num_map: HashMap<char, char> = vec![
+            ('０', '0'),
+            ('１', '1'),
+            ('２', '2'),
+            ('３', '3'),
+            ('４', '4'),
+            ('５', '5'),
+            ('６', '6'),
+            ('７', '7'),
+            ('８', '8'),
+            ('９', '9')
+        ].into_iter().collect();
+
+        self.chars()
+            .map(|num| num_map.get(&num).cloned())
+            .collect::<Option<String>>()
+            .ok_or(self)?
+            .parse::<i32>()
+            .map_err(|_| self)
+    }
 }
 
 pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalError> {
@@ -80,7 +105,7 @@ pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalEr
 
 pub fn tokenize(source_code_contents: &str) -> Vec<Token> {
     source_code_contents
-        .read_split_code_to_vec()
+        .split_code()
         .iter()
         .flatten()
         .map(|token| match Token::try_from(*token) {

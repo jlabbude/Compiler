@@ -1,6 +1,6 @@
 extern crate proc_macro;
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::{parse_macro_input, Data, DeriveInput};
 
 #[proc_macro_derive(Reserved, attributes(word))]
@@ -15,33 +15,36 @@ pub fn reserved_word_strings(input: TokenStream) -> TokenStream {
             let ident = &variant.ident;
             variant.attrs.iter().for_each(|attr| {
                 if attr.path().is_ident("word") {
-                    let words = match attr.parse_args::<syn::LitStr>() {
-                        Ok(lit) => vec![lit.value()],
-                        Err(_) => attr
-                            .parse_args::<syn::ExprArray>()
-                            .unwrap()
-                            .elems
-                            .iter()
-                            .map(|expr| expr.to_token_stream().to_string().replace("\"", ""))
-                            .collect::<Vec<String>>(), // sketchy
-                    };
-                    words.iter().for_each(|word| {
-                        match_try_from_str_arms.push(quote! {
-                            #word => Ok(#enum_name::#ident),
-                        });
+                    if let syn::Meta::List(words1) = attr.clone().meta {
+                        let words = match words1.parse_args::<syn::LitStr>() {
+                            Ok(lit) => vec![lit.value()],
+                            Err(_) => words1
+                                .tokens
+                                .to_string()
+                                .split(',')
+                                .map(|expr| expr.trim().replace("\"", ""))
+                                .collect::<Vec<String>>(),
+                        };
+                        words.iter().for_each(|word| {
+                            match_try_from_str_arms.push(quote! {
+                                #word => Ok(#enum_name::#ident),
+                            });
 
-                        match_try_from_string_arms.push(quote! {
-                            #word => Ok(#enum_name::#ident),
+                            match_try_from_string_arms.push(quote! {
+                                #word => Ok(#enum_name::#ident),
+                            });
                         });
-                    });
-                    let word = &words[0];
-                    match_display_arms.push(quote! {
-                        #enum_name::#ident => #word,
-                    });
+                        let word = &words[0];
+                        match_display_arms.push(quote! {
+                            #enum_name::#ident => #word,
+                        });
+                    } else {
+                        panic!("Declare each variant as a Meta List: #[word(\"...\")]")
+                    }
                 } else {
                     panic!(
-                        "Declare each variant as Literal #[word(\"...\")] or \
-                        Array #[word([\"...\", \"...\"])] attribute"
+                        "Declare each variant as #[word(\"...\")] or \
+                        #[word(\"...\", \"...\")] attribute"
                     );
                 }
             });
