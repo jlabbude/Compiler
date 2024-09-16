@@ -5,4 +5,6 @@ edition = "2021"
 
 [dependencies]
 regex = "1.10.6"
+strum = "0.26.3"
+strum_macros = "0.26.4"
 reserved_proc_macro = { path = "reserved_proc_macro" }

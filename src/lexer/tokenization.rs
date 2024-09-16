@@ -3,6 +3,7 @@ use crate::lexer::reserved::{Operator, Separator};
 use crate::lexer::tokens::Token;
 use regex::bytes::Regex;
 use std::str;
+use strum::IntoEnumIterator;
 
 pub type LexicalError = String;
 
@@ -18,27 +19,17 @@ impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
-            r"(?:「[\S\s]*」|[{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}\s])",
-            Separator::OpenQuotation,
-            Separator::CloseQuotation,
-            Separator::OpenCurlyBraces,
-            Separator::CloseCurlyBraces,
-            Separator::OpenParentheses,
-            Separator::CloseParentheses,
-            Separator::Terminator,
-            Separator::Comma,
-            Separator::Dot,
-            Operator::Assignment,
-            Operator::Sum,
-            Operator::Subtraction,
-            Operator::Multiplication,
-            Operator::Division,
-            Operator::Equality,
-            Operator::Inequality,
-            Operator::GreaterThan,
-            Operator::LessThan,
-            Operator::GreaterThanOrEqual,
-            Operator::LessThanOrEqual,
+            r"(?:「[\S\s]*」|[{separators_and_operators}\s])",
+            separators_and_operators = {
+                let mut string: String = String::new();
+                Separator::iter()
+                    .zip(Operator::iter())
+                    .for_each(|(separator, operator)| {
+                        string+=&operator.to_string();
+                        string+=&separator.to_string();
+                    });
+                string
+            },
         ))
         .unwrap();
         let mut line_num: u32 = 1;
