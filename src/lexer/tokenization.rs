@@ -21,14 +21,11 @@ impl Splitter for str {
         let re = Regex::new(&format!(
             r"(?:「[\S\s]*」|[{separators_and_operators}\s])",
             separators_and_operators = {
-                let mut string: String = String::new();
                 Separator::iter()
-                    .zip(Operator::iter())
-                    .for_each(|(separator, operator)| {
-                        string+=&operator.to_string();
-                        string+=&separator.to_string();
-                    });
-                string
+                    .map(|separator| separator.to_string())
+                    .chain(Operator::iter()
+                            .map(|operator| operator.to_string()))
+                    .collect::<String>()
             },
         ))
         .unwrap();
