@@ -34,15 +34,28 @@ fn main() {
             let mut operators = Vec::new();
             let tokens = tokenize(&std::fs::read_to_string(source_file).unwrap());
             tokens.iter()
-                .for_each(|expression| match expression {
-                    Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
-                    Token::Literal(tokens) => literals.push(tokens.to_string()),
-                    Token::Identifier(tokens) => identifiers.push(tokens.to_string()),
-                    Token::Separator(tokens) => match tokens {
-                        Separator::WhiteSpace | Separator::NewLine => (),
-                        _ => separators.push(tokens.to_string()),
-                    },
-                    Token::Operator(tokens) => operators.push(tokens.to_string()),
+                .for_each(|expression| {
+                    match expression {
+                        Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
+                        Token::Literal(tokens) => literals.push(tokens.to_string()),
+                        Token::Identifier(tokens) => identifiers.push(tokens.to_string()),
+                        Token::Separator(tokens) => match tokens {
+                            Separator::WhiteSpace | Separator::NewLine => (),
+                            _ => separators.push(tokens.to_string()),
+                        },
+                        Token::Operator(tokens) => operators.push(tokens.to_string()),
+                    }
+                    match expression {
+                        Token::ReservedWord(_)
+                        | Token::Literal(_)
+                        | Token::Identifier(_)
+                        | Token::Operator(_) => print!("{expression:?} "),
+                        Token::Separator(separator) => match separator {
+                            Separator::NewLine => println!(),
+                            Separator::WhiteSpace => print!("_ "),
+                            _ => print!("{expression:?} "),
+                        },
+                    }
                 });
             let max_length = *[
                 reserved_words.len(),

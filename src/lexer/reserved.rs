@@ -13,12 +13,22 @@ pub enum ReservedWord {
     Else,
     #[word("整数")]
     Int,
+    #[word("浮動小数点数")]
+    Float,
+    #[word("倍精度浮動小数点数")]
+    Double,
     #[word("文字列")]
     Str,
+    #[word("字")]
+    Char,
     #[word("真偽値")]
     Bool,
     #[word("無")]
     Void,
+    #[word("複合")]
+    Struct,
+    #[word("列挙")]
+    Enum,
 }
 
 #[derive(Reserved, Debug, EnumIter)]

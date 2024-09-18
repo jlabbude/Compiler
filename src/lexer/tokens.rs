@@ -11,6 +11,13 @@ pub struct Str {
 }
 
 #[derive(Debug)]
+pub struct Char {
+    open_quote: Separator,
+    content: char,
+    close_quote: Separator,
+}
+
+#[derive(Debug)]
 pub enum Bool {
     False,
     True,
@@ -22,7 +29,10 @@ const TRUE: &str = "真";
 #[derive(Debug)]
 pub enum Literal {
     Int(i32),
+    Float(f32),
+    Double(f64),
     Str(Str),
+    Char(Char),
     Bool(Bool),
 }
 
@@ -33,7 +43,12 @@ impl TryFrom<String> for Literal {
             Ok(Literal::Int(int))
         } else if let Ok(jp_int) = assignment.split_and_parse_jp_numerals() {
             Ok(Literal::Int(jp_int))
-        } else if assignment.eq(FALSE) || assignment.eq(TRUE) {
+        } else if let Ok(float) = assignment.parse::<f32>() {
+            Ok(Literal::Float(float))
+        } else if let Ok(double) = assignment.parse::<f64>() {
+            Ok(Literal::Double(double))
+        }
+        else if assignment.eq(FALSE) || assignment.eq(TRUE) {
             Ok(Literal::Bool(match assignment.as_str() {
                 FALSE => Bool::False,
                 TRUE => Bool::True,
@@ -48,15 +63,31 @@ impl TryFrom<String> for Literal {
                 .next()
                 .unwrap(),
         )) {
-            Ok(Literal::Str(Str {
-                open_quote: Separator::OpenQuotation,
-                content: assignment
-                    .chars()
-                    .skip(1)
-                    .take(assignment.chars().count() - 2)
-                    .collect(),
-                close_quote: Separator::CloseQuotation,
-            }))
+            match assignment.chars().collect::<Vec<char>>().len() {
+                3 => {
+                    Ok(Literal::Char(Char {
+                        open_quote: Separator::OpenQuotation,
+                        content: assignment
+                            .chars()
+                            .skip(1)
+                            .take(assignment.chars().count() - 2)
+                            .next()
+                            .unwrap(),
+                        close_quote: Separator::CloseQuotation,
+                    }))
+                },
+                _ => {
+                    Ok(Literal::Str(Str {
+                        open_quote: Separator::OpenQuotation,
+                        content: assignment
+                            .chars()
+                            .skip(1)
+                            .take(assignment.chars().count() - 2)
+                            .collect(),
+                        close_quote: Separator::CloseQuotation,
+                    }))
+                }
+            }
         } else {
             Err(assignment)
         }
@@ -66,8 +97,19 @@ impl TryFrom<String> for Literal {
 impl Display for Literal {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Literal::Int(int) => write!(f, "{}", int),
-            Literal::Str(str) => write!(f, "{}{}{}", str.open_quote, str.content, str.close_quote),
+            Literal::Int(int) => write!(f, "{int}"),
+            Literal::Float(float) => write!(f, "{float}"),
+            Literal::Double(double) => write!(f, "{double}"),
+            Literal::Str(str) =>
+                write!(f, "{}{}{}",
+                       str.open_quote,
+                       str.content,
+                       str.close_quote),
+            Literal::Char(char) =>
+                write!(f, "{}{}{}",
+                       char.open_quote,
+                       char.content,
+                       char.close_quote),
             Literal::Bool(bool) => match bool {
                 Bool::False => write!(f, "{}", FALSE),
                 Bool::True => write!(f, "{}", TRUE),
@@ -98,6 +140,11 @@ impl Token {
                 ReservedWord::Str => Ok(Token::ReservedWord(ReservedWord::Str)),
                 ReservedWord::Bool => Ok(Token::ReservedWord(ReservedWord::Bool)),
                 ReservedWord::Void => Ok(Token::ReservedWord(ReservedWord::Void)),
+                ReservedWord::Float => Ok(Token::ReservedWord(ReservedWord::Float)),
+                ReservedWord::Double => Ok(Token::ReservedWord(ReservedWord::Double)),
+                ReservedWord::Char => Ok(Token::ReservedWord(ReservedWord::Char)),
+                ReservedWord::Struct => Ok(Token::ReservedWord(ReservedWord::Struct)),
+                ReservedWord::Enum => Ok(Token::ReservedWord(ReservedWord::Enum)),
             },
             Err(token) => match Literal::try_from(token) {
                 Ok(literal) => Ok(Token::Literal(literal)),
