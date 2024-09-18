@@ -6,9 +6,9 @@ _ _ _ _ Identifier("一") _ Operator(Assignment) _ Identifier("二") Separator(T
 _ _ _ _ Identifier("文字") _ Identifier("ストリンッグ") _ _ Operator(Assignment) _ Literal(Str(Str { open_quote: OpenQuotation, content: "s tr ingテスト", close_quote: CloseQuotation })) Separator(Terminator) 
 
 _ _ _ _ ReservedWord(If) Separator(OpenParentheses) Identifier("温度") _ Operator(LessThan) Operator(Assignment) _ Literal(Int(20)) Separator(CloseParentheses) Separator(OpenCurlyBraces) 
-_ _ _ _ _ _ _ _ Identifier("返す") _ Literal(Bool(True)) Separator(Terminator) 
-_ _ _ _ Separator(CloseCurlyBraces) _ Identifier("それとも") _ Separator(OpenCurlyBraces) 
-_ _ _ _ _ _ _ _ Identifier("返す") _ Literal(Bool(False)) Separator(Terminator) 
+_ _ _ _ _ _ _ _ ReservedWord(Return) _ Literal(Bool(True)) Separator(Terminator)
+_ _ _ _ Separator(CloseCurlyBraces) _ ReservedWord(Else) _ Separator(OpenCurlyBraces)
+_ _ _ _ _ _ _ _ ReservedWord(Return) _ Literal(Bool(False)) Separator(Terminator)
 _ _ _ _ Separator(CloseCurlyBraces) 
 Separator(CloseCurlyBraces) 
 
