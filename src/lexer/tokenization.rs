@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use crate::lexer::reserved::{Operator, Separator};
 use crate::lexer::tokens::Token;
 use regex::bytes::Regex;
+use std::collections::HashMap;
 use std::str;
 use strum::IntoEnumIterator;
 
@@ -19,13 +19,13 @@ impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
-            r"(?:「[\S\s]*」|[{separators_and_operators}\s])",
+            r"(?:「[\S\s]*」|{separators_and_operators}|\s)",
             separators_and_operators = {
                 Separator::iter()
                     .map(|separator| separator.to_string())
-                    .chain(Operator::iter()
-                            .map(|operator| operator.to_string()))
-                    .collect::<String>()
+                    .chain(Operator::iter().map(|operator| operator.to_string()))
+                    .collect::<Vec<_>>()
+                    .join("|")
             },
         ))
         .unwrap();
@@ -66,8 +66,10 @@ impl Splitter for str {
             ('６', '6'),
             ('７', '7'),
             ('８', '8'),
-            ('９', '9')
-        ].into_iter().collect();
+            ('９', '9'),
+        ]
+        .into_iter()
+        .collect();
 
         self.chars()
             .map(|num| num_map.get(&num).cloned())

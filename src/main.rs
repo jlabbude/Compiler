@@ -33,37 +33,39 @@ fn main() {
             let mut separators = Vec::new();
             let mut operators = Vec::new();
             let tokens = tokenize(&std::fs::read_to_string(source_file).unwrap());
-            tokens.iter()
-                .for_each(|expression| {
-                    match expression {
-                        Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
-                        Token::Literal(tokens) => literals.push(tokens.to_string()),
-                        Token::Identifier(tokens) => identifiers.push(tokens.to_string()),
-                        Token::Separator(tokens) => match tokens {
-                            Separator::WhiteSpace | Separator::NewLine => (),
-                            _ => separators.push(tokens.to_string()),
-                        },
-                        Token::Operator(tokens) => operators.push(tokens.to_string()),
-                    }
-                    match expression {
-                        Token::ReservedWord(_)
-                        | Token::Literal(_)
-                        | Token::Identifier(_)
-                        | Token::Operator(_) => print!("{expression:?} "),
-                        Token::Separator(separator) => match separator {
-                            Separator::NewLine => println!(),
-                            Separator::WhiteSpace => print!("_ "),
-                            _ => print!("{expression:?} "),
-                        },
-                    }
-                });
+            tokens.iter().for_each(|expression| {
+                match expression {
+                    Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
+                    Token::Literal(tokens) => literals.push(tokens.to_string()),
+                    Token::Identifier(tokens) => identifiers.push(tokens.to_string()),
+                    Token::Separator(tokens) => match tokens {
+                        Separator::WhiteSpace | Separator::NewLine => (),
+                        _ => separators.push(tokens.to_string()),
+                    },
+                    Token::Operator(tokens) => operators.push(tokens.to_string()),
+                }
+                match expression {
+                    Token::ReservedWord(_)
+                    | Token::Literal(_)
+                    | Token::Identifier(_)
+                    | Token::Operator(_) => print!("{expression:?} "),
+                    Token::Separator(separator) => match separator {
+                        Separator::NewLine => println!(),
+                        Separator::WhiteSpace => print!("_ "),
+                        _ => print!("{expression:?} "),
+                    },
+                }
+            });
             let max_length = *[
                 reserved_words.len(),
                 literals.len(),
                 identifiers.len(),
                 separators.len(),
                 operators.len(),
-            ].iter().max().unwrap();
+            ]
+            .iter()
+            .max()
+            .unwrap();
             reserved_words.resize(max_length, String::new());
             literals.resize(max_length, String::new());
             identifiers.resize(max_length, String::new());
@@ -71,13 +73,14 @@ fn main() {
             operators.resize(max_length, String::new());
             let file = std::fs::File::create("tokens.csv").expect("Could not create file.");
             let mut wtr = csv::Writer::from_writer(file);
-            wtr.write_record(
-                &["Reserved Words",
-                        "Literals",
-                        "Identifiers",
-                        "Separators",
-                        "Operators"])
-                .unwrap();
+            wtr.write_record(&[
+                "Reserved Words",
+                "Literals",
+                "Identifiers",
+                "Separators",
+                "Operators",
+            ])
+            .unwrap();
             for i in 0..max_length {
                 wtr.write_record(&[
                     &reserved_words[i],
@@ -85,7 +88,8 @@ fn main() {
                     &identifiers[i],
                     &separators[i],
                     &operators[i],
-                ]).unwrap();
+                ])
+                .unwrap();
             }
             wtr.flush().unwrap();
             std::process::exit(0);

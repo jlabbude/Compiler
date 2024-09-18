@@ -33,6 +33,16 @@ pub enum ReservedWord {
 
 #[derive(Reserved, Debug, EnumIter)]
 pub enum Operator {
+    #[word("＞＝")]
+    GreaterThanOrEqual,
+    #[word("＜＝")]
+    LessThanOrEqual,
+    #[word("＝＝")]
+    Equality,
+    #[word("！＝")]
+    Inequality,
+    #[word("！")]
+    Negation,
     #[word("＝")]
     Assignment,
     #[word("＋")]
@@ -43,18 +53,10 @@ pub enum Operator {
     Multiplication,
     #[word("／")]
     Division,
-    #[word("＝＝")]
-    Equality,
-    #[word("！＝")]
-    Inequality,
     #[word("＞")]
     GreaterThan,
     #[word("＜")]
     LessThan,
-    #[word("＞＝")]
-    GreaterThanOrEqual,
-    #[word("＜＝")]
-    LessThanOrEqual,
 }
 
 #[derive(Reserved, Debug, PartialEq, Eq, EnumIter)]
@@ -73,6 +75,10 @@ pub enum Separator {
     OpenCurlyBraces,
     #[word("｝")]
     CloseCurlyBraces,
+    #[word("〚")]
+    OpenBrackets,
+    #[word("〛")]
+    CloseBrackets,
     #[word("、")]
     Comma,
     #[word("。")]

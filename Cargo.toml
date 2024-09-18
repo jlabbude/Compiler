@@ -10,3 +10,6 @@ regex = "1.10.6"
 strum_macros = "0.26.4"
 strum = "0.26.3"
 reserved_proc_macro = { path = "reserved_proc_macro" }
+
+[target.x86_64-pc-windows-gnu]
+linker = "x86_64-w64-mingw32-gcc"

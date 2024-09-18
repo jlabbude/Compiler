@@ -47,8 +47,7 @@ impl TryFrom<String> for Literal {
             Ok(Literal::Float(float))
         } else if let Ok(double) = assignment.parse::<f64>() {
             Ok(Literal::Double(double))
-        }
-        else if assignment.eq(FALSE) || assignment.eq(TRUE) {
+        } else if assignment.eq(FALSE) || assignment.eq(TRUE) {
             Ok(Literal::Bool(match assignment.as_str() {
                 FALSE => Bool::False,
                 TRUE => Bool::True,
@@ -64,29 +63,25 @@ impl TryFrom<String> for Literal {
                 .unwrap(),
         )) {
             match assignment.chars().collect::<Vec<char>>().len() {
-                3 => {
-                    Ok(Literal::Char(Char {
-                        open_quote: Separator::OpenQuotation,
-                        content: assignment
-                            .chars()
-                            .skip(1)
-                            .take(assignment.chars().count() - 2)
-                            .next()
-                            .unwrap(),
-                        close_quote: Separator::CloseQuotation,
-                    }))
-                },
-                _ => {
-                    Ok(Literal::Str(Str {
-                        open_quote: Separator::OpenQuotation,
-                        content: assignment
-                            .chars()
-                            .skip(1)
-                            .take(assignment.chars().count() - 2)
-                            .collect(),
-                        close_quote: Separator::CloseQuotation,
-                    }))
-                }
+                3 => Ok(Literal::Char(Char {
+                    open_quote: Separator::OpenQuotation,
+                    content: assignment
+                        .chars()
+                        .skip(1)
+                        .take(assignment.chars().count() - 2)
+                        .next()
+                        .unwrap(),
+                    close_quote: Separator::CloseQuotation,
+                })),
+                _ => Ok(Literal::Str(Str {
+                    open_quote: Separator::OpenQuotation,
+                    content: assignment
+                        .chars()
+                        .skip(1)
+                        .take(assignment.chars().count() - 2)
+                        .collect(),
+                    close_quote: Separator::CloseQuotation,
+                })),
             }
         } else {
             Err(assignment)
@@ -100,16 +95,10 @@ impl Display for Literal {
             Literal::Int(int) => write!(f, "{int}"),
             Literal::Float(float) => write!(f, "{float}"),
             Literal::Double(double) => write!(f, "{double}"),
-            Literal::Str(str) =>
-                write!(f, "{}{}{}",
-                       str.open_quote,
-                       str.content,
-                       str.close_quote),
-            Literal::Char(char) =>
-                write!(f, "{}{}{}",
-                       char.open_quote,
-                       char.content,
-                       char.close_quote),
+            Literal::Str(str) => write!(f, "{}{}{}", str.open_quote, str.content, str.close_quote),
+            Literal::Char(char) => {
+                write!(f, "{}{}{}", char.open_quote, char.content, char.close_quote)
+            }
             Literal::Bool(bool) => match bool {
                 Bool::False => write!(f, "{}", FALSE),
                 Bool::True => write!(f, "{}", TRUE),
