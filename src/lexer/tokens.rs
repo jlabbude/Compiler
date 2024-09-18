@@ -1,5 +1,5 @@
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokenization::{tokenize_identifier, LexicalError, RawToken};
+use crate::lexer::tokenization::{tokenize_identifier, LexicalError, RawToken, Splitter};
 use std::fmt;
 use std::fmt::Display;
 
@@ -31,6 +31,8 @@ impl TryFrom<String> for Literal {
     fn try_from(assignment: String) -> Result<Self, Self::Error> {
         if let Ok(int) = assignment.parse::<i32>() {
             Ok(Literal::Int(int))
+        } else if let Ok(jp_int) = assignment.split_and_parse_jp_numerals() {
+            Ok(Literal::Int(jp_int))
         } else if assignment.eq(FALSE) || assignment.eq(TRUE) {
             Ok(Literal::Bool(match assignment.as_str() {
                 FALSE => Bool::False,

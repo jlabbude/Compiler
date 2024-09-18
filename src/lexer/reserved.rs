@@ -1,4 +1,5 @@
 use reserved_proc_macro::Reserved;
+use strum_macros::EnumIter;
 
 #[derive(Reserved, Debug)]
 pub enum ReservedWord {
@@ -20,7 +21,7 @@ pub enum ReservedWord {
     Void,
 }
 
-#[derive(Reserved, Debug)]
+#[derive(Reserved, Debug, EnumIter)]
 pub enum Operator {
     #[word("＝")]
     Assignment,
@@ -46,7 +47,7 @@ pub enum Operator {
     LessThanOrEqual,
 }
 
-#[derive(Reserved, Debug, PartialEq, Eq)]
+#[derive(Reserved, Debug, PartialEq, Eq, EnumIter)]
 pub enum Separator {
     #[word("；")]
     Terminator,
@@ -68,6 +69,6 @@ pub enum Separator {
     Dot,
     #[word("\n")]
     NewLine,
-    #[word([" ", "　"])]
+    #[word("　", " ")]
     WhiteSpace,
 }
