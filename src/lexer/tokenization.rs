@@ -18,12 +18,13 @@ pub trait Splitter {
 impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
+        println!("{wa}");
         let re = Regex::new(&format!(
             r"(?:「[\S\s]*」|{separators_and_operators}|\s)",
             separators_and_operators = {
                 Separator::iter()
-                    .map(|separator| separator.to_string())
-                    .chain(Operator::iter().map(|operator| operator.to_string()))
+                    .map(|separator| regex::escape(&separator.to_string()))
+                    .chain(Operator::iter().map(|operator| regex::escape(&operator.to_string())))
                     .collect::<Vec<_>>()
                     .join("|")
             },
