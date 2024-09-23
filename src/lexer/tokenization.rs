@@ -12,14 +12,16 @@ pub type RawToken<'a> = (u32, &'a str);
 
 pub trait Splitter {
     fn split_code(&self) -> Vec<Option<RawToken>>;
-    fn split_and_parse_jp_numerals(&self) -> Result<i32, &Self>;
+    fn split_and_parse_jp_numerals<T>(&self) -> Result<T, &Self>
+    where T: str::FromStr + Copy + PartialEq + PartialOrd;
+
 }
 
 impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
-            r"(?:「[\S\s]*」|{separators_and_operators}|\s)",
+            r"(?:(?:[0-9]|[０-９])[.。](?:[0-9]|[０-９])|「[\S\s]*」|{separators_and_operators}|\s)",
             separators_and_operators = {
                 Separator::iter()
                     .map(|separator| regex::escape(&separator.to_string()))
@@ -55,7 +57,8 @@ impl Splitter for str {
             .collect()
     }
 
-    fn split_and_parse_jp_numerals(&self) -> Result<i32, &str> {
+    fn split_and_parse_jp_numerals<T>(&self) -> Result<T, &str>
+    where T: str::FromStr + Copy + PartialEq + PartialOrd {
         let num_map: HashMap<char, char> = vec![
             ('０', '0'),
             ('１', '1'),
@@ -67,6 +70,7 @@ impl Splitter for str {
             ('７', '7'),
             ('８', '8'),
             ('９', '9'),
+            ('。', '.'),
         ]
         .into_iter()
         .collect();
@@ -75,14 +79,14 @@ impl Splitter for str {
             .map(|num| num_map.get(&num).cloned())
             .collect::<Option<String>>()
             .ok_or(self)?
-            .parse::<i32>()
+            .parse::<T>()
             .map_err(|_| self)
     }
 }
 
 pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalError> {
     let (line_number, identifier) = raw_identifier;
-    match Regex::new(r"^[一-龠ぁ-ゔァ-ヴー＿][一-龠ぁ-ゔァ-ヴー＿０-９]*$")
+    match Regex::new(r"^[一-龠ぁ-ゔァ-ヴ＿][一-龠ぁ-ゔァ-ヴ＿０-９]*$")
         .unwrap()
         .is_match(identifier.as_bytes())
     {

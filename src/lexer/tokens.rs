@@ -45,8 +45,12 @@ impl TryFrom<String> for Literal {
             Ok(Literal::Int(jp_int))
         } else if let Ok(float) = assignment.parse::<f32>() {
             Ok(Literal::Float(float))
+        } else if let Ok(jp_float) = assignment.split_and_parse_jp_numerals() {
+            Ok(Literal::Float(jp_float))
         } else if let Ok(double) = assignment.parse::<f64>() {
             Ok(Literal::Double(double))
+        } else if let Ok(jp_double) = assignment.split_and_parse_jp_numerals() {
+            Ok(Literal::Double(jp_double))
         } else if assignment.eq(FALSE) || assignment.eq(TRUE) {
             Ok(Literal::Bool(match assignment.as_str() {
                 FALSE => Bool::False,
