@@ -29,6 +29,7 @@ const TRUE: &str = "真";
 #[derive(Debug)]
 pub enum Literal {
     Int(i32),
+    Long(f64),
     Float(f32),
     Double(f64),
     Str(Str),
@@ -39,18 +40,14 @@ pub enum Literal {
 impl TryFrom<String> for Literal {
     type Error = String;
     fn try_from(assignment: String) -> Result<Self, Self::Error> {
-        if let Ok(int) = assignment.parse::<i32>() {
+        if let Ok(int) = assignment.split_and_parse_jp_numerals() {
             Ok(Literal::Int(int))
-        } else if let Ok(jp_int) = assignment.split_and_parse_jp_numerals() {
-            Ok(Literal::Int(jp_int))
-        } else if let Ok(float) = assignment.parse::<f32>() {
+        } else if let Ok(long) = assignment.split_and_parse_jp_numerals() {
+            Ok(Literal::Long(long))
+        } else if let Ok(float) = assignment.split_and_parse_jp_numerals() {
             Ok(Literal::Float(float))
-        } else if let Ok(jp_float) = assignment.split_and_parse_jp_numerals() {
-            Ok(Literal::Float(jp_float))
-        } else if let Ok(double) = assignment.parse::<f64>() {
+        } else if let Ok(double) = assignment.split_and_parse_jp_numerals() {
             Ok(Literal::Double(double))
-        } else if let Ok(jp_double) = assignment.split_and_parse_jp_numerals() {
-            Ok(Literal::Double(jp_double))
         } else if assignment.eq(FALSE) || assignment.eq(TRUE) {
             Ok(Literal::Bool(match assignment.as_str() {
                 FALSE => Bool::False,
@@ -97,6 +94,7 @@ impl Display for Literal {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Literal::Int(int) => write!(f, "{int}"),
+            Literal::Long(long) => write!(f, "{long}"),
             Literal::Float(float) => write!(f, "{float}"),
             Literal::Double(double) => write!(f, "{double}"),
             Literal::Str(str) => write!(f, "{}{}{}", str.open_quote, str.content, str.close_quote),
@@ -130,6 +128,7 @@ impl Token {
                 ReservedWord::If => Ok(Token::ReservedWord(ReservedWord::If)),
                 ReservedWord::Else => Ok(Token::ReservedWord(ReservedWord::Else)),
                 ReservedWord::Int => Ok(Token::ReservedWord(ReservedWord::Int)),
+                ReservedWord::Long => Ok(Token::ReservedWord(ReservedWord::Long)),
                 ReservedWord::Str => Ok(Token::ReservedWord(ReservedWord::Str)),
                 ReservedWord::Bool => Ok(Token::ReservedWord(ReservedWord::Bool)),
                 ReservedWord::Void => Ok(Token::ReservedWord(ReservedWord::Void)),

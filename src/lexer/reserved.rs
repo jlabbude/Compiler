@@ -13,6 +13,8 @@ pub enum ReservedWord {
     Else,
     #[word("整数")]
     Int,
+    #[word("長い")]
+    Long,
     #[word("浮動小数点数")]
     Float,
     #[word("倍精度浮動小数点数")]

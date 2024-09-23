@@ -13,8 +13,8 @@ pub type RawToken<'a> = (u32, &'a str);
 pub trait Splitter {
     fn split_code(&self) -> Vec<Option<RawToken>>;
     fn split_and_parse_jp_numerals<T>(&self) -> Result<T, &Self>
-    where T: str::FromStr + Copy + PartialEq + PartialOrd;
-
+    where
+        T: str::FromStr + Copy + PartialEq + PartialOrd;
 }
 
 impl Splitter for str {
@@ -58,7 +58,9 @@ impl Splitter for str {
     }
 
     fn split_and_parse_jp_numerals<T>(&self) -> Result<T, &str>
-    where T: str::FromStr + Copy + PartialEq + PartialOrd {
+    where
+        T: str::FromStr + Copy + PartialEq + PartialOrd,
+    {
         let num_map: HashMap<char, char> = vec![
             ('０', '0'),
             ('１', '1'),
@@ -75,12 +77,16 @@ impl Splitter for str {
         .into_iter()
         .collect();
 
-        self.chars()
+        match self
+            .chars()
             .map(|num| num_map.get(&num).cloned())
             .collect::<Option<String>>()
-            .ok_or(self)?
-            .parse::<T>()
-            .map_err(|_| self)
+            .ok_or_else(|| self.to_string())
+        {
+            Ok(wa) => wa.parse::<T>(),
+            Err(wa) => wa.parse::<T>(),
+        }
+        .map_err(|_| self)
     }
 }
 
