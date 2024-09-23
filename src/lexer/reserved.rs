@@ -71,9 +71,9 @@ pub enum Separator {
     OpenQuotation,
     #[word("」")]
     CloseQuotation,
-    #[word("{")]
+    #[word("｛", "{")]
     OpenCurlyBraces,
-    #[word("}")]
+    #[word("｝", "}")]
     CloseCurlyBraces,
     #[word("〚")]
     OpenBrackets,
