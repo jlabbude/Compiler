@@ -10,10 +10,10 @@ mod lexer;
 
 fn check_file(source_file: &Path) -> Result<(), String> {
     match source_file.exists() {
-        false => Err(format!("{}見つかりません", source_file.display())),
+        false => Err(format!("{} file not found", source_file.display())),
         true => match source_file.extension().unwrap().to_str().unwrap() {
             "nh" => Ok(()),
-            _ => Err("ファイルフォーマットが正しくありません".to_string()),
+            _ => Err("Wrong extension.".to_string()),
         },
     }
 }
@@ -21,7 +21,7 @@ fn check_file(source_file: &Path) -> Result<(), String> {
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 2 {
-        eprintln!("引数のサイズが不正です");
+        eprintln!("Please use the input file as the only argument");
         std::process::exit(1);
     }
     let source_file = Path::new(&args[1]);

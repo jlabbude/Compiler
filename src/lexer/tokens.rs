@@ -29,7 +29,7 @@ const TRUE: &str = "真";
 #[derive(Debug)]
 pub enum Literal {
     Int(i32),
-    Long(f64),
+    Long(i64),
     Float(f32),
     Double(f64),
     Str(Str),
