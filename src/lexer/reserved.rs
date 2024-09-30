@@ -3,90 +3,88 @@ use strum_macros::EnumIter;
 
 #[derive(Reserved, Debug)]
 pub enum ReservedWord {
-    #[word("関数")]
+    #[word("func")]
     Function,
-    #[word("返す")]
+    #[word("return")]
     Return,
-    #[word("もし")]
+    #[word("if")]
     If,
-    #[word("それとも")]
+    #[word("else")]
     Else,
-    #[word("整数")]
+    #[word("int")]
     Int,
-    #[word("長い")]
+    #[word("long")]
     Long,
-    #[word("浮動小数点数")]
+    #[word("float")]
     Float,
-    #[word("倍精度浮動小数点数")]
+    #[word("double")]
     Double,
-    #[word("文字列")]
+    #[word("string")]
     Str,
-    #[word("字")]
+    #[word("character")]
     Char,
-    #[word("真偽値")]
+    #[word("boolean")]
     Bool,
-    #[word("無")]
+    #[word("void")]
     Void,
-    #[word("複合")]
+    #[word("struct")]
     Struct,
-    #[word("列挙")]
+    #[word("enumeration")]
     Enum,
 }
 
 #[derive(Reserved, Debug, EnumIter)]
 pub enum Operator {
-    #[word("＞＝")]
+    #[word(">=")]
     GreaterThanOrEqual,
-    #[word("＜＝")]
+    #[word("<=")]
     LessThanOrEqual,
-    #[word("＝＝")]
+    #[word("==")]
     Equality,
-    #[word("！＝")]
+    #[word("!=")]
     Inequality,
-    #[word("！")]
+    #[word("!")]
     Negation,
-    #[word("＝")]
+    #[word("=")]
     Assignment,
-    #[word("＋")]
+    #[word("+")]
     Sum,
-    #[word("ー")]
+    #[word("-")]
     Subtraction,
-    #[word("＊")]
+    #[word("*")]
     Multiplication,
-    #[word("／")]
+    #[word("/")]
     Division,
-    #[word("＞")]
+    #[word(">")]
     GreaterThan,
-    #[word("＜")]
+    #[word("<")]
     LessThan,
 }
 
 #[derive(Reserved, Debug, PartialEq, Eq, EnumIter)]
 pub enum Separator {
-    #[word("；")]
+    #[word(";")]
     Terminator,
-    #[word("（")]
+    #[word("(")]
     OpenParentheses,
-    #[word("）")]
+    #[word(")")]
     CloseParentheses,
-    #[word("「")]
-    OpenQuotation,
-    #[word("」")]
-    CloseQuotation,
-    #[word("｛", "{")]
+    #[word("\"")]
+    Quotation,
+    #[word("{")]
     OpenCurlyBraces,
-    #[word("｝", "}")]
+    #[word("}")]
     CloseCurlyBraces,
-    #[word("〚")]
+    #[word("[")]
     OpenBrackets,
-    #[word("〛")]
+    #[word("]")]
     CloseBrackets,
-    #[word("、")]
+    #[word(",")]
     Comma,
-    #[word("。")]
+    #[word(".")]
     Dot,
     #[word("\n")]
     NewLine,
-    #[word("　", " ")]
+    #[word(" ")]
     WhiteSpace,
 }

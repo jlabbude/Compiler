@@ -21,7 +21,7 @@ impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
-            r"(?:(?:[0-9]|[０-９])[.。](?:[0-9]|[０-９])|「[\S\s]*」|{separators_and_operators}|\s)",
+            r#"(?:(?:[0-9])[.](?:[0-9]*)|"[\S\s]*"|{separators_and_operators}|\s)"#,
             separators_and_operators = {
                 Separator::iter()
                     .map(|separator| regex::escape(&separator.to_string()))
@@ -92,7 +92,7 @@ impl Splitter for str {
 
 pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalError> {
     let (line_number, identifier) = raw_identifier;
-    match Regex::new(r"^[一-龠ぁ-ゔァ-ヴ＿][一-龠ぁ-ゔァ-ヴ＿０-９]*$")
+    match Regex::new(r"^[a-zA-Z_][a-zA-Z0-9\-_]*$")
         .unwrap()
         .is_match(identifier.as_bytes())
     {

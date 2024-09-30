@@ -55,9 +55,9 @@ impl TryFrom<String> for Literal {
                 _ => unreachable!(),
             }))
         } else if assignment.chars().next().eq(&Some(
-            Separator::OpenQuotation.to_string().chars().next().unwrap(),
+            Separator::Quotation.to_string().chars().next().unwrap(),
         )) && assignment.chars().last().eq(&Some(
-            Separator::CloseQuotation
+            Separator::Quotation
                 .to_string()
                 .chars()
                 .next()
@@ -65,23 +65,23 @@ impl TryFrom<String> for Literal {
         )) {
             match assignment.chars().collect::<Vec<char>>().len() {
                 3 => Ok(Literal::Char(Char {
-                    open_quote: Separator::OpenQuotation,
+                    open_quote: Separator::Quotation,
                     content: assignment
                         .chars()
                         .skip(1)
                         .take(assignment.chars().count() - 2)
                         .next()
                         .unwrap(),
-                    close_quote: Separator::CloseQuotation,
+                    close_quote: Separator::Quotation,
                 })),
                 _ => Ok(Literal::Str(Str {
-                    open_quote: Separator::OpenQuotation,
+                    open_quote: Separator::Quotation,
                     content: assignment
                         .chars()
                         .skip(1)
                         .take(assignment.chars().count() - 2)
                         .collect(),
-                    close_quote: Separator::CloseQuotation,
+                    close_quote: Separator::Quotation,
                 })),
             }
         } else {
