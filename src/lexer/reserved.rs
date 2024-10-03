@@ -33,9 +33,9 @@ pub enum ReservedWord {
     Char,
     #[word("boolean")]
     Bool,
-    #[word("True")]
+    #[word("true")]
     True,
-    #[word("False")]
+    #[word("false")]
     False,
     #[word("void")]
     Void,
