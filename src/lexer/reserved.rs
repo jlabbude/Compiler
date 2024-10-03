@@ -11,6 +11,14 @@ pub enum ReservedWord {
     If,
     #[word("else")]
     Else,
+    #[word("for")]
+    For,
+    #[word("while")]
+    While,
+    #[word("let")]
+    Let,
+    #[word("const")]
+    Constant,
     #[word("int")]
     Int,
     #[word("long")]
@@ -25,6 +33,10 @@ pub enum ReservedWord {
     Char,
     #[word("boolean")]
     Bool,
+    #[word("True")]
+    True,
+    #[word("False")]
+    False,
     #[word("void")]
     Void,
     #[word("struct")]

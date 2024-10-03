@@ -51,7 +51,7 @@ fn main() {
                     | Token::Operator(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
                         Separator::NewLine => println!(),
-                        Separator::WhiteSpace => print!("_ "),
+                        Separator::WhiteSpace => print!(" "),
                         _ => print!("{expression:?} "),
                     },
                 }
