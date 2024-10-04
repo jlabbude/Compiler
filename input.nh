@@ -1,14 +1,14 @@
-struct teste {
+struct struct_teste {
     int a,
     int b
 }
 
-enum teste2 {
+enumeration enum_teste {
     A,
     B
 }
 
-func int teste(bool var) {
+func int func_teste(boolean var) {
     while(true) {
         for(int i = 0, i <= 10, i+=1) {
             if (var == true) {

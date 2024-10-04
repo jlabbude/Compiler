@@ -71,7 +71,7 @@ fn main() {
             identifiers.resize(max_length, String::new());
             separators.resize(max_length, String::new());
             operators.resize(max_length, String::new());
-            let file = std::fs::File::create("tokens.csv").expect("Could not create file.");
+            let file = std::fs::File::create("output/output.csv").expect("Could not create file.");
             let mut wtr = csv::Writer::from_writer(file);
             wtr.write_record(&[
                 "Reserved Words",

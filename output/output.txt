@@ -1,0 +1,29 @@
+ReservedWord(Struct)  Identifier("struct_teste")  Separator(OpenCurlyBraces) 
+    ReservedWord(Int)  Identifier("a") Separator(Comma) 
+    ReservedWord(Int)  Identifier("b") 
+Separator(CloseCurlyBraces) 
+
+ReservedWord(Enum)  Identifier("enum_teste")  Separator(OpenCurlyBraces) 
+    Identifier("A") Separator(Comma) 
+    Identifier("B") 
+Separator(CloseCurlyBraces) 
+
+ReservedWord(Function)  ReservedWord(Int)  Identifier("func_teste") Separator(OpenParentheses) ReservedWord(Bool)  Identifier("var") Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+    ReservedWord(While) Separator(OpenParentheses) ReservedWord(True) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+        ReservedWord(For) Separator(OpenParentheses) ReservedWord(Int)  Identifier("i")  Operator(Assignment)  Literal(Int(0)) Separator(Comma)  Identifier("i")  Operator(LessThanOrEqual)  Literal(Int(10)) Separator(Comma)  Identifier("i") Operator(Sum) Operator(Assignment) Literal(Int(1)) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+            ReservedWord(If)  Separator(OpenParentheses) Identifier("var")  Operator(Equality)  ReservedWord(True) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+                ReservedWord(Return)  Literal(Int(10)) Separator(Terminator) 
+            Separator(CloseCurlyBraces)  ReservedWord(Else)  Separator(OpenCurlyBraces) 
+                ReservedWord(Return)  Literal(Int(0)) Separator(Terminator) 
+            Separator(CloseCurlyBraces) 
+        Separator(CloseCurlyBraces) 
+    Separator(CloseCurlyBraces) 
+Separator(CloseCurlyBraces) 
+
+ReservedWord(Function)  ReservedWord(Int)  Identifier("main") Separator(OpenParentheses) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+    ReservedWord(Let)  Identifier("var1")  Operator(Assignment)  ReservedWord(True) Separator(Terminator) 
+
+    Identifier("teste") Separator(OpenParentheses) Identifier("var1") Separator(CloseParentheses) Separator(Terminator) 
+
+    ReservedWord(Return)  Literal(Int(0)) Separator(Terminator) 
+Separator(CloseCurlyBraces) 

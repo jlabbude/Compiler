@@ -37,7 +37,7 @@ pub enum ReservedWord {
     True,
     #[word("false")]
     False,
-    #[word("void")]
+    #[word("void￼￼￼￼￼")]
     Void,
     #[word("struct")]
     Struct,
