@@ -37,7 +37,7 @@ pub enum ReservedWord {
     True,
     #[word("false")]
     False,
-    #[word("void￼￼￼￼￼")]
+    #[word("void")]
     Void,
     #[word("struct")]
     Struct,
@@ -71,6 +71,8 @@ pub enum Operator {
     GreaterThan,
     #[word("<")]
     LessThan,
+    #[word("//")]
+    InlineComment,
 }
 
 #[derive(Reserved, Debug, PartialEq, Eq, EnumIter)]
@@ -82,7 +84,9 @@ pub enum Separator {
     #[word(")")]
     CloseParentheses,
     #[word("\"")]
-    Quotation,
+    StringQuotation,
+    #[word("'")]
+    CharQuotation,
     #[word("{")]
     OpenCurlyBraces,
     #[word("}")]

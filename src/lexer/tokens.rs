@@ -55,9 +55,9 @@ impl TryFrom<String> for Literal {
                 _ => unreachable!(),
             }))
         } else if assignment.chars().next().eq(&Some(
-            Separator::Quotation.to_string().chars().next().unwrap(),
+            Separator::StringQuotation.to_string().chars().next().unwrap(),
         )) && assignment.chars().last().eq(&Some(
-            Separator::Quotation
+            Separator::StringQuotation
                 .to_string()
                 .chars()
                 .next()
@@ -65,23 +65,23 @@ impl TryFrom<String> for Literal {
         )) {
             match assignment.chars().collect::<Vec<char>>().len() {
                 3 => Ok(Literal::Char(Char {
-                    open_quote: Separator::Quotation,
+                    open_quote: Separator::StringQuotation,
                     content: assignment
                         .chars()
                         .skip(1)
                         .take(assignment.chars().count() - 2)
                         .next()
                         .unwrap(),
-                    close_quote: Separator::Quotation,
+                    close_quote: Separator::StringQuotation,
                 })),
                 _ => Ok(Literal::Str(Str {
-                    open_quote: Separator::Quotation,
+                    open_quote: Separator::StringQuotation,
                     content: assignment
                         .chars()
                         .skip(1)
                         .take(assignment.chars().count() - 2)
                         .collect(),
-                    close_quote: Separator::Quotation,
+                    close_quote: Separator::StringQuotation,
                 })),
             }
         } else {
@@ -122,28 +122,7 @@ impl Token {
     pub fn try_from(raw_token: RawToken) -> Result<Self, LexicalError> {
         let token = raw_token.1.to_string();
         match ReservedWord::try_from(token) {
-            Ok(reserved_word) => match reserved_word {
-                ReservedWord::Function => Ok(Token::ReservedWord(ReservedWord::Function)),
-                ReservedWord::Return => Ok(Token::ReservedWord(ReservedWord::Return)),
-                ReservedWord::If => Ok(Token::ReservedWord(ReservedWord::If)),
-                ReservedWord::Else => Ok(Token::ReservedWord(ReservedWord::Else)),
-                ReservedWord::For => Ok(Token::ReservedWord(ReservedWord::For)),
-                ReservedWord::While => Ok(Token::ReservedWord(ReservedWord::While)),
-                ReservedWord::Let => Ok(Token::ReservedWord(ReservedWord::Let)),
-                ReservedWord::Constant => Ok(Token::ReservedWord(ReservedWord::Constant)),
-                ReservedWord::Int => Ok(Token::ReservedWord(ReservedWord::Int)),
-                ReservedWord::Long => Ok(Token::ReservedWord(ReservedWord::Long)),
-                ReservedWord::Str => Ok(Token::ReservedWord(ReservedWord::Str)),
-                ReservedWord::Bool => Ok(Token::ReservedWord(ReservedWord::Bool)),
-                ReservedWord::True => Ok(Token::ReservedWord(ReservedWord::True)),
-                ReservedWord::False => Ok(Token::ReservedWord(ReservedWord::False)),
-                ReservedWord::Void => Ok(Token::ReservedWord(ReservedWord::Void)),
-                ReservedWord::Float => Ok(Token::ReservedWord(ReservedWord::Float)),
-                ReservedWord::Double => Ok(Token::ReservedWord(ReservedWord::Double)),
-                ReservedWord::Char => Ok(Token::ReservedWord(ReservedWord::Char)),
-                ReservedWord::Struct => Ok(Token::ReservedWord(ReservedWord::Struct)),
-                ReservedWord::Enum => Ok(Token::ReservedWord(ReservedWord::Enum)),
-            },
+            Ok(reserved_word) => Ok(Token::ReservedWord(reserved_word)),
             Err(token) => match Literal::try_from(token) {
                 Ok(literal) => Ok(Token::Literal(literal)),
                 Err(token) => match Separator::try_from(token.as_str()) {
