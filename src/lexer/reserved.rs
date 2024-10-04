@@ -11,6 +11,10 @@ pub enum ReservedWord {
     If,
     #[word("else")]
     Else,
+    #[word("match")]
+    Match,
+    #[word("case")]
+    Case,
     #[word("for")]
     For,
     #[word("while")]
@@ -33,10 +37,6 @@ pub enum ReservedWord {
     Char,
     #[word("boolean")]
     Bool,
-    #[word("true")]
-    True,
-    #[word("false")]
-    False,
     #[word("void")]
     Void,
     #[word("struct")]
@@ -71,12 +71,12 @@ pub enum Operator {
     GreaterThan,
     #[word("<")]
     LessThan,
-    #[word("//")]
-    InlineComment,
 }
 
 #[derive(Reserved, Debug, PartialEq, Eq, EnumIter)]
 pub enum Separator {
+    #[word("//")]
+    InlineComment,
     #[word(";")]
     Terminator,
     #[word("(")]

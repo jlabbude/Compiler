@@ -1,5 +1,7 @@
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokenization::{tokenize_identifier, LexicalError, RawToken, Splitter};
+use crate::lexer::tokenization::{
+    tokenize_comment, tokenize_identifier, LexicalError, RawToken, Splitter,
+};
 use std::fmt;
 use std::fmt::Display;
 
@@ -23,8 +25,8 @@ pub enum Bool {
     True,
 }
 
-const FALSE: &str = "偽";
-const TRUE: &str = "真";
+const FALSE: &str = "false";
+const TRUE: &str = "true";
 
 #[derive(Debug)]
 pub enum Literal {
@@ -55,7 +57,11 @@ impl TryFrom<String> for Literal {
                 _ => unreachable!(),
             }))
         } else if assignment.chars().next().eq(&Some(
-            Separator::StringQuotation.to_string().chars().next().unwrap(),
+            Separator::StringQuotation
+                .to_string()
+                .chars()
+                .next()
+                .unwrap(),
         )) && assignment.chars().last().eq(&Some(
             Separator::StringQuotation
                 .to_string()
@@ -114,6 +120,7 @@ pub enum Token {
     ReservedWord(ReservedWord),
     Literal(Literal),
     Identifier(String),
+    Comment(String),
     Separator(Separator),
     Operator(Operator),
 }
@@ -129,9 +136,12 @@ impl Token {
                     Ok(separator) => Ok(Token::Separator(separator)),
                     Err(token) => match Operator::try_from(token.as_str()) {
                         Ok(operator) => Ok(Token::Operator(operator)),
-                        Err(_) => match tokenize_identifier(raw_token) {
-                            Ok(identifier) => Ok(Token::Identifier(identifier)),
-                            Err(error) => Err(error),
+                        Err(_) => match tokenize_comment(raw_token) {
+                            Ok(comment) => Ok(Token::Comment(comment)),
+                            Err(_) => match tokenize_identifier(raw_token) {
+                                Ok(identifier) => Ok(Token::Identifier(identifier)),
+                                Err(error) => Err(error),
+                            },
                         },
                     },
                 },

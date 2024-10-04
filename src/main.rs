@@ -31,6 +31,7 @@ fn main() {
             let mut literals = Vec::new();
             let mut identifiers = Vec::new();
             let mut separators = Vec::new();
+            let mut comments = Vec::new();
             let mut operators = Vec::new();
             let tokens = tokenize(&std::fs::read_to_string(source_file).unwrap());
             tokens.iter().for_each(|expression| {
@@ -38,6 +39,7 @@ fn main() {
                     Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
                     Token::Literal(tokens) => literals.push(tokens.to_string()),
                     Token::Identifier(tokens) => identifiers.push(tokens.to_string()),
+                    Token::Comment(comment) => comments.push(comment.to_string()),
                     Token::Separator(tokens) => match tokens {
                         Separator::WhiteSpace | Separator::NewLine => (),
                         _ => separators.push(tokens.to_string()),
@@ -48,6 +50,7 @@ fn main() {
                     Token::ReservedWord(_)
                     | Token::Literal(_)
                     | Token::Identifier(_)
+                    | Token::Comment(_)
                     | Token::Operator(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
                         Separator::NewLine => print!("{}", Separator::NewLine.to_string()),

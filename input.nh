@@ -8,7 +8,7 @@ enumeration enum_teste {
     B
 }
 
-func int func_teste(boolean var) {
+func int func_if_teste(boolean var) {
     while(true) {
         for(int i = 0, i <= 10, i+=1) {
             if (var == true) {
@@ -18,6 +18,11 @@ func int func_teste(boolean var) {
             }
         }
     }
+}
+
+func int func_match_teste(boolean var) {
+    //Comment test Comment test Comment test Comment test Comment test Comment test
+
 }
 
 func int main() {
