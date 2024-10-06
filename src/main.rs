@@ -53,7 +53,7 @@ fn main() {
                     | Token::Comment(_)
                     | Token::Operator(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
-                        Separator::NewLine => print!("{}", Separator::NewLine.to_string()),
+                        Separator::NewLine | Separator::WindowsNewLine => print!("{}", Separator::NewLine.to_string()),
                         Separator::WhiteSpace => print!("{}", Separator::WhiteSpace.to_string()),
                         _ => print!("{expression:?} "),
                     },

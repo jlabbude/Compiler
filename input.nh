@@ -20,13 +20,26 @@ func int func_if_teste(boolean var) {
     }
 }
 
-func int func_match_teste(boolean var) {
+func int func_match_teste(int var) {
     //Comment test Comment test Comment test Comment test Comment test Comment test
+
+    match var {
+        case 1 {
+            return 1;
+        }
+        case 2 {
+            return 2;
+        }
+        default {
+            return 0;
+        }
+    }
 
 }
 
 func int main() {
-    let var1 = true;
+    let boolean var1 = true;
+    let string varstr = "string teste aaaaaaaaaaaaaaaaaaaa";
 
     teste(var1);
 

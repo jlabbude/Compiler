@@ -15,6 +15,8 @@ pub enum ReservedWord {
     Match,
     #[word("case")]
     Case,
+    #[word("default")]
+    Default,
     #[word("for")]
     For,
     #[word("while")]
@@ -99,6 +101,8 @@ pub enum Separator {
     Comma,
     #[word(".")]
     Dot,
+    #[word("\r\n")]
+    WindowsNewLine,
     #[word("\n")]
     NewLine,
     #[word(" ")]

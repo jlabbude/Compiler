@@ -20,13 +20,26 @@ ReservedWord(Function)  ReservedWord(Int)  Identifier("func_if_teste") Separator
     Separator(CloseCurlyBraces) 
 Separator(CloseCurlyBraces) 
 
-ReservedWord(Function)  ReservedWord(Int)  Identifier("func_match_teste") Separator(OpenParentheses) ReservedWord(Bool)  Identifier("var") Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
-    Comment("Comment test Comment test Comment test Comment test Comment test Comment test") 
+ReservedWord(Function)  ReservedWord(Int)  Identifier("func_match_teste") Separator(OpenParentheses) ReservedWord(Int)  Identifier("var") Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+    Comment("Comment test Comment test Comment test Comment test Comment test Comment test\r") 
+
+    ReservedWord(Match)  Identifier("var")  Separator(OpenCurlyBraces) 
+        ReservedWord(Case)  Literal(Int(1))  Separator(OpenCurlyBraces) 
+            ReservedWord(Return)  Literal(Int(1)) Separator(Terminator) 
+        Separator(CloseCurlyBraces) 
+        ReservedWord(Case)  Literal(Int(2))  Separator(OpenCurlyBraces) 
+            ReservedWord(Return)  Literal(Int(2)) Separator(Terminator) 
+        Separator(CloseCurlyBraces) 
+        ReservedWord(Default)  Separator(OpenCurlyBraces) 
+            ReservedWord(Return)  Literal(Int(0)) Separator(Terminator) 
+        Separator(CloseCurlyBraces) 
+    Separator(CloseCurlyBraces) 
 
 Separator(CloseCurlyBraces) 
 
 ReservedWord(Function)  ReservedWord(Int)  Identifier("main") Separator(OpenParentheses) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
-    ReservedWord(Let)  Identifier("var1")  Operator(Assignment)  Literal(Bool(True)) Separator(Terminator) 
+    ReservedWord(Let)  ReservedWord(Bool)  Identifier("var1")  Operator(Assignment)  Literal(Bool(True)) Separator(Terminator) 
+    ReservedWord(Let)  ReservedWord(Str)  Identifier("varstr")  Operator(Assignment)  Literal(Str(Str { open_quote: StringQuotation, content: "string teste aaaaaaaaaaaaaaaaaaaa", close_quote: StringQuotation })) Separator(Terminator) 
 
     Identifier("teste") Separator(OpenParentheses) Identifier("var1") Separator(CloseParentheses) Separator(Terminator) 
 
