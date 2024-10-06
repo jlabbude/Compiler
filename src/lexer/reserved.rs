@@ -49,6 +49,8 @@ pub enum ReservedWord {
 
 #[derive(Reserved, Debug, EnumIter)]
 pub enum Operator {
+    #[word("+=")]
+    Increment,
     #[word(">=")]
     GreaterThanOrEqual,
     #[word("<=")]

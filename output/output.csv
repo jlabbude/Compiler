@@ -1,11 +1,11 @@
 Reserved Words,Literals,Identifiers,Separators,Operators
 struct,true,struct_teste,{,=
 int,0,a,",",<=
-int,10,b,},+
-enumeration,1,enum_teste,{,=
-func,true,A,",",==
+int,10,b,},+=
+enumeration,1,enum_teste,{,==
+func,true,A,",",=
 int,10,B,},=
-boolean,0,func_if_teste,(,=
+boolean,0,func_if_teste,(,
 while,1,var,),
 for,1,i,{,
 int,2,i,(,

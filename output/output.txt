@@ -10,7 +10,7 @@ Separator(CloseCurlyBraces)
 
 ReservedWord(Function)  ReservedWord(Int)  Identifier("func_if_teste") Separator(OpenParentheses) ReservedWord(Bool)  Identifier("var") Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
     ReservedWord(While) Separator(OpenParentheses) Literal(Bool(True)) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
-        ReservedWord(For) Separator(OpenParentheses) ReservedWord(Int)  Identifier("i")  Operator(Assignment)  Literal(Int(0)) Separator(Comma)  Identifier("i")  Operator(LessThanOrEqual)  Literal(Int(10)) Separator(Comma)  Identifier("i") Operator(Sum) Operator(Assignment) Literal(Int(1)) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
+        ReservedWord(For) Separator(OpenParentheses) ReservedWord(Int)  Identifier("i")  Operator(Assignment)  Literal(Int(0)) Separator(Comma)  Identifier("i")  Operator(LessThanOrEqual)  Literal(Int(10)) Separator(Comma)  Identifier("i") Operator(Increment) Literal(Int(1)) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
             ReservedWord(If)  Separator(OpenParentheses) Identifier("var")  Operator(Equality)  Literal(Bool(True)) Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
                 ReservedWord(Return)  Literal(Int(10)) Separator(Terminator) 
             Separator(CloseCurlyBraces)  ReservedWord(Else)  Separator(OpenCurlyBraces) 
