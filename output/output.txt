@@ -21,7 +21,7 @@ ReservedWord(Function)  ReservedWord(Int)  Identifier("func_if_teste") Separator
 Separator(CloseCurlyBraces) 
 
 ReservedWord(Function)  ReservedWord(Int)  Identifier("func_match_teste") Separator(OpenParentheses) ReservedWord(Int)  Identifier("var") Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
-    Comment("Comment test Comment test Comment test Comment test Comment test Comment test\r") 
+    Comment("Comment test Comment test Comment test Comment test Comment test Comment test") 
 
     ReservedWord(Match)  Identifier("var")  Separator(OpenCurlyBraces) 
         ReservedWord(Case)  Literal(Int(1))  Separator(OpenCurlyBraces) 

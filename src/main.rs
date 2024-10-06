@@ -33,7 +33,7 @@ fn main() {
             let mut separators = Vec::new();
             let mut comments = Vec::new();
             let mut operators = Vec::new();
-            let tokens = tokenize(&std::fs::read_to_string(source_file).unwrap());
+            let tokens = tokenize(&std::fs::read_to_string(source_file).unwrap().replace("\r\n", "\n"));
             tokens.iter().for_each(|expression| {
                 match expression {
                     Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
@@ -53,7 +53,7 @@ fn main() {
                     | Token::Comment(_)
                     | Token::Operator(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
-                        Separator::NewLine | Separator::WindowsNewLine => print!("{}", Separator::NewLine.to_string()),
+                        Separator::NewLine  => print!("{}", Separator::NewLine.to_string()),
                         Separator::WhiteSpace => print!("{}", Separator::WhiteSpace.to_string()),
                         _ => print!("{expression:?} "),
                     },

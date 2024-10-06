@@ -101,8 +101,6 @@ pub enum Separator {
     Comma,
     #[word(".")]
     Dot,
-    #[word("\r\n")]
-    WindowsNewLine,
     #[word("\n")]
     NewLine,
     #[word(" ")]
