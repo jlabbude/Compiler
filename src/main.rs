@@ -12,7 +12,7 @@ fn check_file(source_file: &Path) -> Result<(), String> {
     match source_file.exists() {
         false => Err(format!("{} file not found", source_file.display())),
         true => match source_file.extension().unwrap().to_str().unwrap() {
-            "nh" => Ok(()),
+            "glim" => Ok(()),
             _ => Err("Wrong extension.".to_string()),
         },
     }
