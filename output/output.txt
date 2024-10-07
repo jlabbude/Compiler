@@ -22,6 +22,7 @@ Separator(CloseCurlyBraces)
 
 ReservedWord(Function)  ReservedWord(Int)  Identifier("func_match_teste") Separator(OpenParentheses) ReservedWord(Int)  Identifier("var") Separator(CloseParentheses)  Separator(OpenCurlyBraces) 
     Comment("Comment test Comment test Comment test Comment test Comment test Comment test") 
+    Comment("\n        Comment block\n        Comment block\n        Comment block\n        Comment block\n        Comment block\n    ") 
 
     ReservedWord(Match)  Identifier("var")  Separator(OpenCurlyBraces) 
         ReservedWord(Case)  Literal(Int(1))  Separator(OpenCurlyBraces) 

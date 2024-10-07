@@ -22,6 +22,13 @@ func int func_if_teste(boolean var) {
 
 func int func_match_teste(int var) {
     //Comment test Comment test Comment test Comment test Comment test Comment test
+    /*
+        Comment block
+        Comment block
+        Comment block
+        Comment block
+        Comment block
+    */
 
     match var {
         case 1 {

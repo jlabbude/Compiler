@@ -21,7 +21,7 @@ impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
-            r#"//.*|(?:(?:[0-9])[.](?:[0-9]*)|"[\S\s]*"|{separators_and_operators})"#,
+            r#"\/\*[\S\s]*\*\/|//.*|(?:(?:[0-9])[.](?:[0-9]*)|"[\S\s]*"|{separators_and_operators})"#,
             separators_and_operators = {
                 Separator::iter()
                     .map(|separator| regex::escape(&separator.to_string()))
@@ -103,22 +103,33 @@ pub fn tokenize_identifier(raw_identifier: RawToken) -> Result<String, LexicalEr
     }
 }
 
-pub fn tokenize_comment(raw_token: RawToken) -> Result<String, ()> {
-    let mut char_token_iter = raw_token.1.chars();
-    let comment = format!(
+pub fn check_for_2_chars<T>(mut chars: T) -> Result<String, ()>
+where
+    T: Iterator<Item = char>,
+{
+    Ok(format!(
         "{}{}",
-        match char_token_iter.next() {
-            Some(x) => x,
-            None => return Err(()),
-        },
-        match char_token_iter.next() {
-            Some(x) => x,
-            None => return Err(()),
-        }
-    );
+        chars.next().ok_or(())?,
+        chars.next().ok_or(())?
+    ))
+}
 
-    if comment.eq(&Separator::InlineComment.to_string()) {
+pub fn tokenize_comment(raw_token: RawToken) -> Result<String, ()> {
+    if check_for_2_chars(&mut raw_token.1.chars())?.eq(&Separator::InlineComment.to_string()) {
         Ok(raw_token.1[2..].to_string())
+    } else {
+        Err(())
+    }
+}
+
+pub fn tokenize_comment_block(raw_token: RawToken) -> Result<String, ()> {
+    let comment_start = check_for_2_chars(&mut raw_token.1.chars())?;
+    let comment_end = check_for_2_chars(&mut raw_token.1.chars().rev())?.chars().rev().collect::<String>();
+
+    if comment_start.eq(&Separator::CommentBlockOpen.to_string())
+        && comment_end.eq(&Separator::CommentBlockClose.to_string())
+    {
+        Ok(raw_token.1[..raw_token.1.len()-2][2..].to_string())
     } else {
         Err(())
     }

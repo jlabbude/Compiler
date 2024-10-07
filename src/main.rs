@@ -33,7 +33,11 @@ fn main() {
             let mut separators = Vec::new();
             let mut comments = Vec::new();
             let mut operators = Vec::new();
-            let tokens = tokenize(&std::fs::read_to_string(source_file).unwrap().replace("\r\n", "\n"));
+            let tokens = tokenize(
+                &std::fs::read_to_string(source_file)
+                    .unwrap()
+                    .replace("\r\n", "\n") // windows newline
+            );
             tokens.iter().for_each(|expression| {
                 match expression {
                     Token::ReservedWord(tokens) => reserved_words.push(tokens.to_string()),
@@ -53,8 +57,8 @@ fn main() {
                     | Token::Comment(_)
                     | Token::Operator(_) => print!("{expression:?} "),
                     Token::Separator(separator) => match separator {
-                        Separator::NewLine  => print!("{}", Separator::NewLine.to_string()),
-                        Separator::WhiteSpace => print!("{}", Separator::WhiteSpace.to_string()),
+                        Separator::NewLine => print!("{}", Separator::NewLine),
+                        Separator::WhiteSpace => print!("{}", Separator::WhiteSpace),
                         _ => print!("{expression:?} "),
                     },
                 }
@@ -76,7 +80,7 @@ fn main() {
             operators.resize(max_length, String::new());
             let file = std::fs::File::create("output/output.csv").expect("Could not create file.");
             let mut wtr = csv::Writer::from_writer(file);
-            wtr.write_record(&[
+            wtr.write_record([
                 "Reserved Words",
                 "Literals",
                 "Identifiers",
@@ -85,7 +89,7 @@ fn main() {
             ])
             .unwrap();
             for i in 0..max_length {
-                wtr.write_record(&[
+                wtr.write_record([
                     &reserved_words[i],
                     &literals[i],
                     &identifiers[i],

@@ -81,6 +81,10 @@ pub enum Operator {
 pub enum Separator {
     #[word("//")]
     InlineComment,
+    #[word("/*")]
+    CommentBlockOpen,
+    #[word("*/")]
+    CommentBlockClose,
     #[word(";")]
     Terminator,
     #[word("(")]

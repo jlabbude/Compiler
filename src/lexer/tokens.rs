@@ -1,6 +1,6 @@
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokenization::{
-    tokenize_comment, tokenize_identifier, LexicalError, RawToken, Splitter,
+    tokenize_comment, tokenize_comment_block, tokenize_identifier, LexicalError, RawToken, Splitter,
 };
 use std::fmt;
 use std::fmt::Display;
@@ -127,25 +127,25 @@ pub enum Token {
 
 impl Token {
     pub fn try_from(raw_token: RawToken) -> Result<Self, LexicalError> {
-        let token = raw_token.1.to_string();
-        match ReservedWord::try_from(token) {
-            Ok(reserved_word) => Ok(Token::ReservedWord(reserved_word)),
-            Err(token) => match Literal::try_from(token) {
-                Ok(literal) => Ok(Token::Literal(literal)),
-                Err(token) => match Separator::try_from(token.as_str()) {
-                    Ok(separator) => Ok(Token::Separator(separator)),
-                    Err(token) => match Operator::try_from(token.as_str()) {
-                        Ok(operator) => Ok(Token::Operator(operator)),
-                        Err(_) => match tokenize_comment(raw_token) {
-                            Ok(comment) => Ok(Token::Comment(comment)),
-                            Err(_) => match tokenize_identifier(raw_token) {
-                                Ok(identifier) => Ok(Token::Identifier(identifier)),
-                                Err(error) => Err(error),
-                            },
-                        },
-                    },
-                },
-            },
+        if let Ok(token) = ReservedWord::try_from(raw_token.1.to_string()) {
+            Ok(Token::ReservedWord(token))
+        } else if let Ok(token) = Literal::try_from(raw_token.1.to_string()) {
+            Ok(Token::Literal(token))
+        } else if let Ok(token) = Separator::try_from(raw_token.1.to_string()) {
+            Ok(Token::Separator(token))
+        } else if let Ok(token) = Operator::try_from(raw_token.1.to_string()) {
+            Ok(Token::Operator(token))
+        } else if let Ok(token) = tokenize_comment(raw_token) {
+            Ok(Token::Comment(token))
+        } else if let Ok(token) = tokenize_comment_block(raw_token) {
+            Ok(Token::Comment(token))
+        } else if let Ok(token) = tokenize_identifier(raw_token) {
+            Ok(Token::Identifier(token))
+        } else {
+            match tokenize_identifier(raw_token) {
+                Ok(token) => Ok(Token::Identifier(token)),
+                Err(e) => Err(e),
+            }
         }
     }
 }
