@@ -69,6 +69,7 @@ fn main() {
                 identifiers.len(),
                 separators.len(),
                 operators.len(),
+                comments.len(),
             ]
             .iter()
             .max()
@@ -78,6 +79,7 @@ fn main() {
             identifiers.resize(max_length, String::new());
             separators.resize(max_length, String::new());
             operators.resize(max_length, String::new());
+            comments.resize(max_length, String::new());
             let file = std::fs::File::create("output/output.csv").expect("Could not create file.");
             let mut wtr = csv::Writer::from_writer(file);
             wtr.write_record([
@@ -86,6 +88,7 @@ fn main() {
                 "Identifiers",
                 "Separators",
                 "Operators",
+                "Comments",
             ])
             .unwrap();
             for i in 0..max_length {
@@ -95,6 +98,7 @@ fn main() {
                     &identifiers[i],
                     &separators[i],
                     &operators[i],
+                    &comments[i],
                 ])
                 .unwrap();
             }
