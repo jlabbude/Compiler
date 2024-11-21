@@ -7,6 +7,7 @@ use crate::lexer::tokens::Token;
 use std::path::Path;
 
 mod lexer;
+mod parser;
 
 fn check_file(source_file: &Path) -> Result<(), String> {
     match source_file.exists() {
