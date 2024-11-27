@@ -1,25 +1,25 @@
-use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokenization::{
     tokenize_comment, tokenize_comment_block, tokenize_identifier, LexicalError, RawToken, Splitter,
 };
+use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use std::fmt;
 use std::fmt::Display;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Str {
     open_quote: Separator,
     content: String,
     close_quote: Separator,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Char {
     open_quote: Separator,
     content: char,
     close_quote: Separator,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Bool {
     False,
     True,
@@ -28,7 +28,7 @@ pub enum Bool {
 const FALSE: &str = "false";
 const TRUE: &str = "true";
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Literal {
     Int(i32),
     Long(i64),
@@ -115,7 +115,7 @@ impl Display for Literal {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     ReservedWord(ReservedWord),
     Literal(Literal),
