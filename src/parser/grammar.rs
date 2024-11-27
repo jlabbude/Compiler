@@ -19,10 +19,9 @@ pub enum NonTerminal {
 pub enum Symbol {
     NonTerminal(NonTerminal),
     Terminal(TerminalTokens),
-    Start,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum TerminalTokens {
     Token(Token),
     DataType,
@@ -48,8 +47,7 @@ impl ParsingRule {
         token: &Token,
     ) -> Option<&'a ParsingRule> {
         table.iter().find(|rule| {
-            rule.non_terminal == *non_terminal
-                && (ParsingRule::matches_token(&rule.token, token))
+            rule.non_terminal == *non_terminal && (ParsingRule::matches_token(&rule.token, token))
         })
     }
 
@@ -98,7 +96,11 @@ impl ParsingRule {
                             .get(pos)
                             .unwrap_or(&Token::Separator(Separator::NewLine)),
                     ) {
-                        pos += 1;
+                        if expected != TerminalTokens::Epsilon {
+                            pos += 1;
+                        } else {
+                            continue;
+                        }
                     } else {
                         return Err(format!(
                             "Expected {:?}, found {:?}",
@@ -115,6 +117,9 @@ impl ParsingRule {
                             .get(pos)
                             .unwrap_or(&Token::Separator(Separator::NewLine)),
                     ) {
+                        if rule.token == TerminalTokens::Epsilon {
+                            continue;
+                        }
                         for symbol in rule.production.iter().rev() {
                             stack.push(symbol.clone());
                         }
@@ -126,11 +131,10 @@ impl ParsingRule {
                         ));
                     }
                 }
-                Symbol::Start => {}
             }
         }
 
-        if pos == tokens.len() || stack.is_empty() {
+        if pos <= tokens.len() {
             Ok(&tokens[start_pos..pos])
         } else {
             Err(format!("Unconsumed input at position {}", pos))

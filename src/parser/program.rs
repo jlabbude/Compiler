@@ -9,13 +9,14 @@ impl Parser for Program {
         vec![
             ParsingRule {
                 non_terminal: NonTerminal::Program,
-                token: TerminalTokens::Epsilon,
-                production: vec![Symbol::Terminal(TerminalTokens::Epsilon)],
-            },
-            ParsingRule {
-                non_terminal: NonTerminal::Program,
                 token: TerminalTokens::Token(Token::ReservedWord(ReservedWord::Function)),
                 production: vec![Symbol::NonTerminal(NonTerminal::Function)],
+            },
+            // has to be last
+            ParsingRule {
+                non_terminal: NonTerminal::Program,
+                token: TerminalTokens::Epsilon,
+                production: vec![Symbol::Terminal(TerminalTokens::Epsilon)],
             },
         ]
     }

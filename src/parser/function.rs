@@ -35,7 +35,7 @@ impl Parser for Function {
                     Symbol::Terminal(TerminalTokens::Token(Token::Separator(
                         Separator::CloseCurlyBraces,
                     ))),
-                    Symbol::Start,
+                    Symbol::NonTerminal(NonTerminal::Program),
                 ],
             },
             ParsingRule {
@@ -49,7 +49,7 @@ impl Parser for Function {
             ParsingRule {
                 non_terminal: NonTerminal::FuncArgumentList,
                 token: TerminalTokens::Token(Token::Separator(Separator::CloseParenthesis)),
-                production: vec![Symbol::Start],
+                production: vec![Symbol::Terminal(TerminalTokens::Epsilon)],
             },
             ParsingRule {
                 non_terminal: NonTerminal::FuncArgumentsTail,
@@ -63,7 +63,7 @@ impl Parser for Function {
             ParsingRule {
                 non_terminal: NonTerminal::FuncArgumentsTail,
                 token: TerminalTokens::Token(Token::Separator(Separator::CloseParenthesis)),
-                production: vec![Symbol::Start],
+                production: vec![Symbol::Terminal(TerminalTokens::Epsilon)],
             },
             ParsingRule {
                 non_terminal: NonTerminal::FuncArgument,
@@ -76,7 +76,7 @@ impl Parser for Function {
             ParsingRule {
                 non_terminal: NonTerminal::FuncBody,
                 token: TerminalTokens::Token(Token::Separator(Separator::CloseCurlyBraces)),
-                production: vec![Symbol::Start],
+                production: vec![Symbol::Terminal(TerminalTokens::Epsilon)],
             },
         ]
     }

@@ -26,11 +26,13 @@ fn check_file(source_file: &Path) -> Result<(), String> {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() != 2 {
-        eprintln!("Please use the input file as the only argument, {args:?}");
-        std::process::exit(1);
-    }
-    let source_file = Path::new(&args[1]);
+    let source_file = if args.len() != 2 {
+        //eprintln!("Please use the input file as the only argument, {args:?}");
+        //std::process::exit(1);
+        Path::new("input.glim")
+    } else {
+        Path::new(&args[1])
+    };
     match check_file(source_file) {
         Ok(_) => {
             let tokens = tokenize(
