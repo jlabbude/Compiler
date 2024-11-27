@@ -1,7 +1,7 @@
 use reserved_proc_macro::Reserved;
 use strum_macros::EnumIter;
 
-#[derive(Reserved, Debug)]
+#[derive(Reserved, Debug, PartialEq, Clone)]
 pub enum ReservedWord {
     #[word("func")]
     Function,
@@ -47,7 +47,7 @@ pub enum ReservedWord {
     Enum,
 }
 
-#[derive(Reserved, Debug, EnumIter)]
+#[derive(Reserved, Debug, EnumIter, PartialEq, Clone)]
 pub enum Operator {
     #[word("+=")]
     Increment,
@@ -77,7 +77,7 @@ pub enum Operator {
     LessThan,
 }
 
-#[derive(Reserved, Debug, PartialEq, Eq, EnumIter)]
+#[derive(Reserved, Debug, PartialEq, Eq, EnumIter, Clone)]
 pub enum Separator {
     #[word("//")]
     InlineComment,
@@ -88,9 +88,9 @@ pub enum Separator {
     #[word(";")]
     Terminator,
     #[word("(")]
-    OpenParentheses,
+    OpenParenthesis,
     #[word(")")]
-    CloseParentheses,
+    CloseParenthesis,
     #[word("\"")]
     StringQuotation,
     #[word("'")]
