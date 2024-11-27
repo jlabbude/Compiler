@@ -5,6 +5,7 @@ use crate::lexer::tokenization::tokenize;
 use crate::lexer::tokens::Token;
 use crate::parser::function::Function;
 use crate::parser::grammar::{Parser, ParsingRule};
+use crate::parser::program::Program;
 use lexer::reserved::Separator;
 use std::path::Path;
 
@@ -43,9 +44,11 @@ fn main() {
                     && *token != Token::Separator(Separator::NewLine)
             })
             .collect::<Tokens>();
+            let table = &mut Program::parsing_table();
+            table.append(&mut Function::parsing_table());
             println!(
                 "{:?}",
-                match ParsingRule::parse_with_table(&tokens, &Function::parsing_table()) {
+                match ParsingRule::parse_with_table(&tokens, table) {
                     Ok(x) => x,
                     Err(err) => {
                         eprintln!("{}", err);

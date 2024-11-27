@@ -3,13 +3,13 @@ use crate::lexer::tokens::Token;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum NonTerminal {
+    Program,
+    Statement,
+    Expression,
     Function,
     Struct,
     Enum,
-    Statement,
-    Expression,
-    DataType,
-    FuncArguments,
+    FuncArgumentList,
     FuncArgument,
     FuncArgumentsTail,
     FuncBody,
@@ -18,22 +18,20 @@ pub enum NonTerminal {
 #[derive(Debug, Clone)]
 pub enum Symbol {
     NonTerminal(NonTerminal),
-    Terminal(Terminal),
-    Epsilon,
+    Terminal(TerminalTokens),
+    Start,
 }
 
-/// im not sure if terminal is actually always terminal
-/// because on parsing rule you can parse a non-terminal to another non-terminal,
-/// but I needed a way to wrap regular tokens and generic data types on an enum
 #[derive(Clone, Debug)]
-pub enum Terminal {
+pub enum TerminalTokens {
     Token(Token),
     DataType,
+    Epsilon,
 }
 
 pub struct ParsingRule {
     pub non_terminal: NonTerminal,
-    pub token: Terminal,
+    pub token: TerminalTokens,
     pub production: Vec<Symbol>,
 }
 
@@ -51,19 +49,8 @@ impl ParsingRule {
     ) -> Option<&'a ParsingRule> {
         table.iter().find(|rule| {
             rule.non_terminal == *non_terminal
-                && (ParsingRule::matches_token(&rule.token, token)
-                    || ParsingRule::is_dynamic_match(rule, token))
+                && (ParsingRule::matches_token(&rule.token, token))
         })
-    }
-
-    fn is_dynamic_match(rule: &ParsingRule, token: &Token) -> bool {
-        match rule.non_terminal {
-            NonTerminal::DataType => ParsingRule::is_data_type(token),
-            NonTerminal::FuncArguments => {
-                matches!(token, Token::Separator(Separator::CloseParenthesis))
-            }
-            _ => false,
-        }
     }
 
     fn is_data_type(token: &Token) -> bool {
@@ -79,9 +66,9 @@ impl ParsingRule {
         )
     }
 
-    fn matches_token(expected: &Terminal, actual: &Token) -> bool {
+    fn matches_token(expected: &TerminalTokens, actual: &Token) -> bool {
         match expected {
-            Terminal::Token(expected) => match (expected, actual) {
+            TerminalTokens::Token(expected) => match (expected, actual) {
                 (Token::ReservedWord(expected), Token::ReservedWord(actual)) => expected == actual,
                 (Token::Literal(_), Token::Literal(_)) => true,
                 (Token::Identifier(_), Token::Identifier(_)) => true,
@@ -89,7 +76,8 @@ impl ParsingRule {
                 (Token::Operator(expected), Token::Operator(actual)) => expected == actual,
                 _ => false,
             },
-            Terminal::DataType => ParsingRule::is_data_type(actual),
+            TerminalTokens::DataType => ParsingRule::is_data_type(actual),
+            TerminalTokens::Epsilon => true,
         }
     }
 
@@ -97,7 +85,7 @@ impl ParsingRule {
         tokens: &'a [Token],
         table: &[ParsingRule],
     ) -> Result<&'a [Token], String> {
-        let mut stack = vec![Symbol::NonTerminal(NonTerminal::Function)];
+        let mut stack = vec![Symbol::NonTerminal(NonTerminal::Program)];
         let mut pos = 0;
         let start_pos = pos;
 
@@ -138,7 +126,7 @@ impl ParsingRule {
                         ));
                     }
                 }
-                Symbol::Epsilon => {}
+                Symbol::Start => {}
             }
         }
 
