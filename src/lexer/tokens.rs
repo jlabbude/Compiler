@@ -1,7 +1,7 @@
+use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokenization::{
     tokenize_comment, tokenize_comment_block, tokenize_identifier, LexicalError, RawToken, Splitter,
 };
-use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use std::fmt;
 use std::fmt::Display;
 

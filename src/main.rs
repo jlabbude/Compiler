@@ -3,7 +3,8 @@ extern crate core;
 
 use crate::lexer::tokenization::tokenize;
 use crate::lexer::tokens::Token;
-use crate::parser::grammar::{construct_parsing_table, parse_with_table};
+use crate::parser::function::Function;
+use crate::parser::grammar::{Parser, ParsingRule};
 use lexer::reserved::Separator;
 use std::path::Path;
 
@@ -43,8 +44,8 @@ fn main() {
             })
             .collect::<Tokens>();
             println!(
-                "{:#?}",
-                match parse_with_table(&tokens, &construct_parsing_table()) {
+                "{:?}",
+                match ParsingRule::parse_with_table(&tokens, &Function::parsing_table()) {
                     Ok(x) => x,
                     Err(err) => {
                         eprintln!("{}", err);
