@@ -1,5 +1,6 @@
 use crate::lexer::reserved::{Operator, Separator};
 use crate::lexer::tokens::Token;
+use crate::Tokens;
 use regex::bytes::Regex;
 use std::collections::HashMap;
 use std::str;
@@ -124,18 +125,21 @@ pub fn tokenize_comment(raw_token: RawToken) -> Result<String, ()> {
 
 pub fn tokenize_comment_block(raw_token: RawToken) -> Result<String, ()> {
     let comment_start = check_for_2_chars(&mut raw_token.1.chars())?;
-    let comment_end = check_for_2_chars(&mut raw_token.1.chars().rev())?.chars().rev().collect::<String>();
+    let comment_end = check_for_2_chars(&mut raw_token.1.chars().rev())?
+        .chars()
+        .rev()
+        .collect::<String>();
 
     if comment_start.eq(&Separator::CommentBlockOpen.to_string())
         && comment_end.eq(&Separator::CommentBlockClose.to_string())
     {
-        Ok(raw_token.1[..raw_token.1.len()-2][2..].to_string())
+        Ok(raw_token.1[..raw_token.1.len() - 2][2..].to_string())
     } else {
         Err(())
     }
 }
 
-pub fn tokenize(source_code_contents: &str) -> Vec<Token> {
+pub fn tokenize(source_code_contents: &str) -> Tokens {
     source_code_contents
         .split_code()
         .iter()
@@ -147,5 +151,5 @@ pub fn tokenize(source_code_contents: &str) -> Vec<Token> {
                 std::process::exit(1);
             }
         })
-        .collect::<Vec<Token>>()
+        .collect::<Tokens>()
 }

@@ -1,1 +1,2 @@
-mod syntax;
+pub mod function;
+pub mod grammar;
