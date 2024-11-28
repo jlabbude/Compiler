@@ -1,18 +1,46 @@
 use crate::lexer::reserved::{ReservedWord, Separator};
-use crate::lexer::tokens::Token;
+use crate::lexer::tokens::{Literal, Token};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum NonTerminal {
     Program,
     Statement,
     Expression,
-    Function,
     Struct,
     Enum,
+    Function,
     FuncArgumentList,
     FuncArgument,
     FuncArgumentsTail,
     FuncBody,
+    FuncTail,
+}
+
+pub enum Statement {
+    Declaration(Token, Token),
+    Assignment(Token, Expression),
+    FunctionCall(Token, Vec<Expression>),
+    Return(Expression),
+    If(Expression, Box<Statement>, Option<Box<Statement>>),
+    While(Expression, Box<Statement>),
+    For(Box<Statement>, Expression, Box<Statement>, Box<Statement>),
+    Break,
+    Continue,
+    Block(Vec<Statement>),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Expression {
+    BinaryOp(Box<Expression>, Token, Box<Expression>),
+    UnaryOp(Token, Box<Expression>),
+    Literal,
+    Identifier(Token),
+    FunctionCall(Token, Vec<Expression>),
+    ArrayAccess(Token, Box<Expression>),
+    StructAccess(Token, Box<Expression>),
+    EnumAccess(Token, Box<Expression>),
+    Assignment(Box<Expression>, Box<Expression>),
+    TernaryOp(Box<Expression>, Box<Expression>, Box<Expression>),
 }
 
 #[derive(Debug, Clone)]
@@ -25,6 +53,7 @@ pub enum Symbol {
 pub enum TerminalTokens {
     Token(Token),
     DataType,
+    Literal,
     Epsilon,
 }
 
@@ -64,6 +93,21 @@ impl ParsingRule {
         )
     }
 
+    fn is_literal(token: &Token) -> bool {
+        match token {
+            Token::Literal(lit) => match lit {
+                Literal::Int(_) => true,
+                Literal::Long(_) => true,
+                Literal::Float(_) => true,
+                Literal::Double(_) => true,
+                Literal::Str(_) => true,
+                Literal::Char(_) => true,
+                Literal::Bool(_) => true,
+            },
+            _ => false,
+        }
+    }
+
     fn matches_token(expected: &TerminalTokens, actual: &Token) -> bool {
         match expected {
             TerminalTokens::Token(expected) => match (expected, actual) {
@@ -75,6 +119,7 @@ impl ParsingRule {
                 _ => false,
             },
             TerminalTokens::DataType => ParsingRule::is_data_type(actual),
+            TerminalTokens::Literal => ParsingRule::is_literal(actual),
             TerminalTokens::Epsilon => true,
         }
     }
