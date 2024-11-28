@@ -1,6 +1,6 @@
 use crate::lexer::reserved::ReservedWord;
 use crate::lexer::tokens::Token;
-use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, TerminalTokens};
+use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 pub struct Program;
 
@@ -9,14 +9,14 @@ impl Parser for Program {
         vec![
             ParsingRule {
                 non_terminal: NonTerminal::Program,
-                token: TerminalTokens::Token(Token::ReservedWord(ReservedWord::Function)),
-                production: vec![Symbol::NonTerminal(NonTerminal::Function)],
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::Function)),
+                production: vec![Symbol::NonTerminal(NonTerminal::Func)],
             },
             // has to be last
             ParsingRule {
                 non_terminal: NonTerminal::Program,
-                token: TerminalTokens::Epsilon,
-                production: vec![Symbol::Terminal(TerminalTokens::Epsilon)],
+                token: Terminal::Epsilon,
+                production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },
         ]
     }

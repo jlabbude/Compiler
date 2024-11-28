@@ -1,19 +1,21 @@
 use crate::lexer::reserved::{ReservedWord, Separator};
-use crate::lexer::tokens::{Literal, Token};
+use crate::lexer::tokens::Token;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum NonTerminal {
     Program,
-    Statement,
-    Expression,
     Struct,
     Enum,
-    Function,
-    FuncArgumentList,
+    Func,
     FuncArgument,
-    FuncArgumentsTail,
     FuncBody,
     FuncTail,
+    Statement,
+    StatementList,
+    StmntAssign,
+    StmntDecl,
+    StmntReturn,
+    Expression,
 }
 
 pub enum Statement {
@@ -46,20 +48,20 @@ pub enum Expression {
 #[derive(Debug, Clone)]
 pub enum Symbol {
     NonTerminal(NonTerminal),
-    Terminal(TerminalTokens),
+    Terminal(Terminal),
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum TerminalTokens {
+pub enum Terminal {
     Token(Token),
     DataType,
-    Literal,
+    Any,
     Epsilon,
 }
 
 pub struct ParsingRule {
     pub non_terminal: NonTerminal,
-    pub token: TerminalTokens,
+    pub token: Terminal,
     pub production: Vec<Symbol>,
 }
 
@@ -93,24 +95,9 @@ impl ParsingRule {
         )
     }
 
-    fn is_literal(token: &Token) -> bool {
-        match token {
-            Token::Literal(lit) => match lit {
-                Literal::Int(_) => true,
-                Literal::Long(_) => true,
-                Literal::Float(_) => true,
-                Literal::Double(_) => true,
-                Literal::Str(_) => true,
-                Literal::Char(_) => true,
-                Literal::Bool(_) => true,
-            },
-            _ => false,
-        }
-    }
-
-    fn matches_token(expected: &TerminalTokens, actual: &Token) -> bool {
+    fn matches_token(expected: &Terminal, actual: &Token) -> bool {
         match expected {
-            TerminalTokens::Token(expected) => match (expected, actual) {
+            Terminal::Token(expected) => match (expected, actual) {
                 (Token::ReservedWord(expected), Token::ReservedWord(actual)) => expected == actual,
                 (Token::Literal(_), Token::Literal(_)) => true,
                 (Token::Identifier(_), Token::Identifier(_)) => true,
@@ -118,9 +105,9 @@ impl ParsingRule {
                 (Token::Operator(expected), Token::Operator(actual)) => expected == actual,
                 _ => false,
             },
-            TerminalTokens::DataType => ParsingRule::is_data_type(actual),
-            TerminalTokens::Literal => ParsingRule::is_literal(actual),
-            TerminalTokens::Epsilon => true,
+            Terminal::DataType => ParsingRule::is_data_type(actual),
+            Terminal::Any => true,
+            Terminal::Epsilon => false,
         }
     }
 
@@ -141,7 +128,7 @@ impl ParsingRule {
                             .get(pos)
                             .unwrap_or(&Token::Separator(Separator::NewLine)),
                     ) {
-                        if expected != TerminalTokens::Epsilon {
+                        if expected != Terminal::Epsilon {
                             pos += 1;
                         } else {
                             continue;
@@ -162,7 +149,7 @@ impl ParsingRule {
                             .get(pos)
                             .unwrap_or(&Token::Separator(Separator::NewLine)),
                     ) {
-                        if rule.token == TerminalTokens::Epsilon {
+                        if rule.token == Terminal::Epsilon {
                             continue;
                         }
                         for symbol in rule.production.iter().rev() {
