@@ -61,6 +61,10 @@ pub enum Operator {
     Inequality,
     #[word("!")]
     Negation,
+    #[word("&&")]
+    And,
+    #[word("||")]
+    Or,
     #[word("=")]
     Assignment,
     #[word("+")]

@@ -20,9 +20,7 @@ impl Parser for Function {
                 non_terminal: NonTerminal::Func,
                 token: Terminal::Token(Token::ReservedWord(ReservedWord::Function)),
                 production: vec![
-                    Symbol::Terminal(Terminal::Token(Token::ReservedWord(
-                        ReservedWord::Function,
-                    ))),
+                    Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Function))),
                     Symbol::Terminal(Terminal::DataType),
                     Symbol::Terminal(id),
                     Symbol::Terminal(Terminal::Token(Token::Separator(
@@ -42,7 +40,6 @@ impl Parser for Function {
                     Symbol::NonTerminal(NonTerminal::Program),
                 ],
             },
-
             // <FuncArgument> :: <DataType> id <FuncArgument> | , <DataType> id <FuncArgument> | e
             ParsingRule {
                 non_terminal: NonTerminal::FuncArgument,
@@ -65,11 +62,9 @@ impl Parser for Function {
             },
             ParsingRule {
                 non_terminal: NonTerminal::FuncArgument,
-                token: Terminal::Epsilon,
+                token: Terminal::Token(Token::Separator(Separator::CloseParenthesis)),
                 production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },
-
-
             ParsingRule {
                 non_terminal: NonTerminal::FuncBody,
                 token: Terminal::Token(Token::Separator(Separator::CloseCurlyBraces)),
@@ -77,46 +72,94 @@ impl Parser for Function {
             },
             ParsingRule {
                 non_terminal: NonTerminal::FuncBody,
-                token: Terminal::Epsilon,
-                production: vec![
-                    Symbol::NonTerminal(NonTerminal::StatementList),
-                ],
+                token: Terminal::Any,
+                production: vec![Symbol::NonTerminal(NonTerminal::StatementList)],
             },
-
             ParsingRule {
                 non_terminal: NonTerminal::StatementList,
-                token: Terminal::Epsilon,
+                token: Terminal::Token(Token::Separator(Separator::CloseCurlyBraces)),
+                production: vec![Symbol::Terminal(Terminal::Epsilon)],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::StatementList,
+                token: Terminal::Any,
                 production: vec![
                     Symbol::NonTerminal(NonTerminal::Statement),
                     Symbol::NonTerminal(NonTerminal::StatementList),
                 ],
             },
             ParsingRule {
-                non_terminal: NonTerminal::StatementList,
-                token: Terminal::Epsilon,
-                production: vec![
-                    Symbol::Terminal(Terminal::Epsilon),
-                ],
-            },
-
-            ParsingRule {
                 non_terminal: NonTerminal::Statement,
-                token: Terminal::Epsilon,
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::Return)),
                 production: vec![
                     Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Return))),
-                    Symbol::NonTerminal(NonTerminal::Expression),
+                    Symbol::NonTerminal(NonTerminal::Expr),
                 ],
             },
-
             ParsingRule {
-                non_terminal: NonTerminal::Expression,
+                non_terminal: NonTerminal::Statement,
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::If)),
+                production: vec![
+                    Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::If))),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::OpenParenthesis,
+                    ))),
+                    Symbol::NonTerminal(NonTerminal::Expr),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::CloseParenthesis,
+                    ))),
+                    Symbol::NonTerminal(NonTerminal::Statement),
+                    Symbol::NonTerminal(NonTerminal::Statement),
+                ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::Expr,
                 token: literal,
                 production: vec![
                     Symbol::Terminal(literal),
+                    Symbol::NonTerminal(NonTerminal::ExprOperation),
                     Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
-                ]
+                ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::Expr,
+                token: id,
+                production: vec![
+                    Symbol::Terminal(id),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
+                ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::Expr,
+                token: id,
+                production: vec![
+                    Symbol::Terminal(id),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::OpenParenthesis,
+                    ))),
+                    Symbol::NonTerminal(NonTerminal::Expr),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::CloseParenthesis,
+                    ))),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
+                ],
             },
 
+
+            ParsingRule {
+                non_terminal: NonTerminal::ExprOperation,
+                token: Terminal::UnaryOp,
+                production: vec![
+                    Symbol::Terminal(Terminal::UnaryOp),
+                    Symbol::Terminal(literal),
+                    Symbol::NonTerminal(NonTerminal::ExprOperation),
+                ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::ExprOperation,
+                token: Terminal::Token(Token::Separator(Separator::Terminator)),
+                production: vec![Symbol::Terminal(Terminal::Epsilon)],
+            },
         ]
     }
 }

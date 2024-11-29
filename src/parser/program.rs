@@ -15,7 +15,7 @@ impl Parser for Program {
             // has to be last
             ParsingRule {
                 non_terminal: NonTerminal::Program,
-                token: Terminal::Epsilon,
+                token: Terminal::Any,
                 production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },
         ]

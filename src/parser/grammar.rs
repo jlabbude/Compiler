@@ -1,4 +1,4 @@
-use crate::lexer::reserved::{ReservedWord, Separator};
+use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokens::Token;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -6,46 +6,42 @@ pub enum NonTerminal {
     Program,
     Struct,
     Enum,
+
     Func,
     FuncArgument,
     FuncBody,
     FuncTail,
+
     Statement,
     StatementList,
     StmntAssign,
     StmntDecl,
     StmntReturn,
-    Expression,
+
+    Expr,
+    ExprOperation,
+    ExprLiteral,
+    ExprIdentifier,
+    ExprFunctionCall,
+    ExprArrayAccess,
+    ExprStructAccess,
+    ExprEnumAccess,
 }
 
 pub enum Statement {
-    Declaration(Token, Token),
-    Assignment(Token, Expression),
-    FunctionCall(Token, Vec<Expression>),
-    Return(Expression),
-    If(Expression, Box<Statement>, Option<Box<Statement>>),
-    While(Expression, Box<Statement>),
-    For(Box<Statement>, Expression, Box<Statement>, Box<Statement>),
+    Declaration,
+    Assignment,
+    FunctionCall,
+    Return,
+    If,
+    While,
+    For,
     Break,
     Continue,
-    Block(Vec<Statement>),
+    Block,
 }
 
-#[derive(Clone, Debug, PartialEq)]
-pub enum Expression {
-    BinaryOp(Box<Expression>, Token, Box<Expression>),
-    UnaryOp(Token, Box<Expression>),
-    Literal,
-    Identifier(Token),
-    FunctionCall(Token, Vec<Expression>),
-    ArrayAccess(Token, Box<Expression>),
-    StructAccess(Token, Box<Expression>),
-    EnumAccess(Token, Box<Expression>),
-    Assignment(Box<Expression>, Box<Expression>),
-    TernaryOp(Box<Expression>, Box<Expression>, Box<Expression>),
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Symbol {
     NonTerminal(NonTerminal),
     Terminal(Terminal),
@@ -55,6 +51,7 @@ pub enum Symbol {
 pub enum Terminal {
     Token(Token),
     DataType,
+    UnaryOp,
     Any,
     Epsilon,
 }
@@ -106,6 +103,29 @@ impl ParsingRule {
                 _ => false,
             },
             Terminal::DataType => ParsingRule::is_data_type(actual),
+            Terminal::UnaryOp => {
+                if let Token::Operator(op) = actual {
+                    matches!(
+                        op,
+                        Operator::Increment
+                            | Operator::GreaterThanOrEqual
+                            | Operator::LessThanOrEqual
+                            | Operator::Sum
+                            | Operator::Subtraction
+                            | Operator::Multiplication
+                            | Operator::Division
+                            | Operator::Inequality
+                            | Operator::Negation
+                            | Operator::GreaterThan
+                            | Operator::LessThan
+                            | Operator::Equality
+                            | Operator::And
+                            | Operator::Or
+                    )
+                } else {
+                    false
+                }
+            }
             Terminal::Any => true,
             Terminal::Epsilon => false,
         }
@@ -145,16 +165,18 @@ impl ParsingRule {
                     if let Some(rule) = ParsingRule::find_rule(
                         table,
                         &nt,
-                        tokens
-                            .get(pos)
-                            .unwrap_or(&Token::Separator(Separator::NewLine)),
+                        match tokens.get(pos) {
+                            Some(x) => x,
+                            None => continue,
+                        },
                     ) {
-                        if rule.token == Terminal::Epsilon {
-                            continue;
-                        }
-                        for symbol in rule.production.iter().rev() {
-                            stack.push(symbol.clone());
-                        }
+                        rule.production
+                            .iter()
+                            .rev()
+                            .filter(|symbol| **symbol != Symbol::Terminal(Terminal::Epsilon))
+                            .for_each(|symbol| {
+                                stack.push(symbol.clone());
+                            });
                     } else {
                         return Err(format!(
                             "No rule for NonTerminal {:?} with token {:?}",
