@@ -126,14 +126,20 @@ impl Parser for Function {
                 token: id,
                 production: vec![
                     Symbol::Terminal(id),
+                    Symbol::NonTerminal(NonTerminal::ExprFunctionCall),
                     Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
                 ],
             },
             ParsingRule {
                 non_terminal: NonTerminal::Expr,
-                token: id,
+                token: Terminal::Any,
+                production: vec![Symbol::Terminal(Terminal::Epsilon)],
+            },
+            // func call
+            ParsingRule {
+                non_terminal: NonTerminal::ExprFunctionCall,
+                token: Terminal::Token(Token::Separator(Separator::OpenParenthesis)),
                 production: vec![
-                    Symbol::Terminal(id),
                     Symbol::Terminal(Terminal::Token(Token::Separator(
                         Separator::OpenParenthesis,
                     ))),
@@ -141,8 +147,12 @@ impl Parser for Function {
                     Symbol::Terminal(Terminal::Token(Token::Separator(
                         Separator::CloseParenthesis,
                     ))),
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
                 ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::ExprFunctionCall,
+                token: Terminal::Token(Token::Separator(Separator::CloseParenthesis)),
+                production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },
 
 

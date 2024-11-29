@@ -1,2 +1,3 @@
-func int test(int jao, float jao2) {
+func int test(int var, float va2) {
+    return function(a);
 }
