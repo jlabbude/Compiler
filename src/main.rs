@@ -42,8 +42,12 @@ fn main() {
             )
             .into_iter()
             .filter(|token| {
-                *token != Token::Separator(Separator::WhiteSpace)
-                    && *token != Token::Separator(Separator::NewLine)
+                !matches!(
+                    token,
+                    Token::Separator(Separator::WhiteSpace)
+                        | Token::Separator(Separator::NewLine)
+                        | Token::Comment(_)
+                )
             })
             .collect::<Tokens>();
             let table = &mut Program::parsing_table();

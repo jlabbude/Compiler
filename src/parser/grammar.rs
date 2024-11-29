@@ -13,7 +13,7 @@ pub enum NonTerminal {
     FuncTail,
 
     Statement,
-    StatementList,
+    StmntList,
     StmntAssign,
     StmntDecl,
     StmntReturn,
@@ -22,10 +22,13 @@ pub enum NonTerminal {
     ExprOperation,
     ExprLiteral,
     ExprIdentifier,
-    ExprFunctionCall,
+    ExprFuncCall,
     ExprArrayAccess,
     ExprStructAccess,
     ExprEnumAccess,
+    ExprOperand,
+    ExprFuncCallArgs,
+    StmntElse,
 }
 
 pub enum Statement {
@@ -51,7 +54,7 @@ pub enum Symbol {
 pub enum Terminal {
     Token(Token),
     DataType,
-    UnaryOp,
+    UnaryOperator,
     Any,
     Epsilon,
 }
@@ -103,7 +106,7 @@ impl ParsingRule {
                 _ => false,
             },
             Terminal::DataType => ParsingRule::is_data_type(actual),
-            Terminal::UnaryOp => {
+            Terminal::UnaryOperator => {
                 if let Token::Operator(op) = actual {
                     matches!(
                         op,
