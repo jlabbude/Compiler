@@ -56,6 +56,7 @@ pub enum Terminal {
     Token(Token),
     DataType,
     UnaryOperator,
+    ReassignOp,
     Any,
     Epsilon,
 }
@@ -130,6 +131,17 @@ impl ParsingRule {
                     false
                 }
             }
+            Terminal::ReassignOp => {
+                if let Token::Operator(op) = actual {
+                    matches!(op,
+                        Operator::Assignment
+                            | Operator::Increment
+                            | Operator::Decrement
+                    )
+                } else {
+                    false
+                }
+            }
             Terminal::Any => true,
             Terminal::Epsilon => false,
         }
@@ -159,9 +171,9 @@ impl ParsingRule {
                         }
                     } else {
                         return Err(format!(
-                            "Expected {:?}, found {:?}",
+                            "Expected {:?}, found {:?}, at {pos}",
                             expected,
-                            tokens.get(pos)
+                            tokens.get(pos),
                         ));
                     }
                 }
@@ -183,7 +195,7 @@ impl ParsingRule {
                             });
                     } else {
                         return Err(format!(
-                            "No rule for NonTerminal {:?} with token {:?}",
+                            "No rule for NonTerminal {:?} with token {:?} at position {pos}",
                             nt,
                             tokens.get(pos)
                         ));

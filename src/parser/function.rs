@@ -213,17 +213,26 @@ impl Parser for Function {
             ParsingRule {
                 non_terminal: NonTerminal::Statement,
                 token: Terminal::Token(Token::ReservedWord(ReservedWord::Let)),
-                production: vec![Symbol::NonTerminal(NonTerminal::StmntDecl)],
+                production: vec![
+                    Symbol::NonTerminal(NonTerminal::StmntDecl),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
+                ],
             },
             ParsingRule {
                 non_terminal: NonTerminal::Statement,
                 token: Terminal::Token(Token::ReservedWord(ReservedWord::Constant)),
-                production: vec![Symbol::NonTerminal(NonTerminal::StmntDecl)],
+                production: vec![
+                    Symbol::NonTerminal(NonTerminal::StmntDecl),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
+                ],
             },
             ParsingRule {
                 non_terminal: NonTerminal::Statement,
                 token: id,
-                production: vec![Symbol::NonTerminal(NonTerminal::StmntAssign)],
+                production: vec![
+                    Symbol::NonTerminal(NonTerminal::StmntAssign),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
+                ],
             },
             /*
 
@@ -319,7 +328,7 @@ impl Parser for Function {
             },
             ParsingRule {
                 non_terminal: NonTerminal::ExprCall,
-                token: Terminal::Token(Token::Separator(Separator::Terminator)),
+                token: Terminal::Any,
                 production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },
             /*
@@ -453,6 +462,28 @@ impl Parser for Function {
             */
             ParsingRule {
                 non_terminal: NonTerminal::StmntElse,
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::Elif)),
+                production: vec![
+                    Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Elif))),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::OpenParenthesis,
+                    ))),
+                    Symbol::NonTerminal(NonTerminal::Expr),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::CloseParenthesis,
+                    ))),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::OpenCurlyBraces,
+                    ))),
+                    Symbol::NonTerminal(NonTerminal::StmntList),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::CloseCurlyBraces,
+                    ))),
+                    Symbol::NonTerminal(NonTerminal::StmntElse),
+                ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::StmntElse,
                 token: Terminal::Token(Token::ReservedWord(ReservedWord::Else)),
                 production: vec![
                     Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Else))),
@@ -463,7 +494,6 @@ impl Parser for Function {
                     Symbol::Terminal(Terminal::Token(Token::Separator(
                         Separator::CloseCurlyBraces,
                     ))),
-                    Symbol::NonTerminal(NonTerminal::StmntElse),
                 ],
             },
             ParsingRule {
@@ -485,7 +515,6 @@ impl Parser for Function {
                     Symbol::Terminal(id),
                     Symbol::Terminal(Terminal::Token(Token::Operator(Operator::Assignment))),
                     Symbol::NonTerminal(NonTerminal::Expr),
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
                 ],
             },
             ParsingRule {
@@ -497,7 +526,6 @@ impl Parser for Function {
                     Symbol::Terminal(id),
                     Symbol::Terminal(Terminal::Token(Token::Operator(Operator::Assignment))),
                     Symbol::NonTerminal(NonTerminal::Expr),
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
                 ],
             },
             /*
@@ -510,9 +538,8 @@ impl Parser for Function {
                 token: id,
                 production: vec![
                     Symbol::Terminal(id),
-                    Symbol::Terminal(Terminal::Token(Token::Operator(Operator::Assignment))),
+                    Symbol::Terminal(Terminal::ReassignOp),
                     Symbol::NonTerminal(NonTerminal::Expr),
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Terminator))),
                 ],
             },
         ]

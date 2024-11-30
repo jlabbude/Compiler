@@ -11,6 +11,8 @@ pub enum ReservedWord {
     If,
     #[word("else")]
     Else,
+    #[word("elif")]
+    Elif,
     #[word("match")]
     Match,
     #[word("case")]
@@ -51,6 +53,8 @@ pub enum ReservedWord {
 pub enum Operator {
     #[word("+=")]
     Increment,
+    #[word("-=")]
+    Decrement,
     #[word(">=")]
     GreaterThanOrEqual,
     #[word("<=")]
