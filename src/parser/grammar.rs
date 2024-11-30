@@ -24,11 +24,12 @@ pub enum NonTerminal {
     ExprIdentifier,
     ExprFuncCall,
     ExprArrayAccess,
-    ExprStructAccess,
-    ExprEnumAccess,
+    ExprFieldAccess,
     ExprOperand,
     ExprFuncCallArgs,
     StmntElse,
+    StmntCase,
+    ExprCall,
 }
 
 pub enum Statement {

@@ -1,3 +1,6 @@
 func int test(int var, float va2) {
-    return 1; //teste
+    let int jao = 1;
+    let int john = jao(1, 2);
+    jao = 2;
+    let int jao = jao[1];
 }
