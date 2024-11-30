@@ -16,11 +16,40 @@ const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 pub struct Function;
 
 impl Parser for Function {
-    /// \<Func> :: func \<DataType> id ( \<FuncArgument> ) { \<FuncBody> } \<S> <br/>
-    /// \<FuncArgument> :: \<DataType> id \<FuncArgument> | , \<DataType> id \<FuncArgument> | e
-    /// \<FuncBody> :: e TODO
+    /// <Func> :: func <DataType> id ( <FuncArgument> ) { <FuncBody> } <S>
+    /// <FuncArgument> :: <DataType> id <FuncArgument> | , <DataType> id <FuncArgument> | e
+    /// <FuncBody> :: <StmntList> | e
+    /// <StmntList> :: <Statement> <StmntList> | e
+    /// <Statement> :: return <Expr> ;
+    ///             | if ( <Expr> ) { <StmntList> } <StmntElse>
+    ///             | match ( <Expr> ) { <StmntCase> }
+    ///             | for ( <StmntDecl> ; <Expr> ; <StmntAssign> ) { <StmntList> }
+    ///             | while ( <Expr> ) { <StmntList> }
+    ///             | <StmntDecl> ;
+    ///             | <StmntAssign> ;
+    /// <StmntCase> :: case <Literal> { <StmntList> } <StmntCase> | default { <StmntList> } | e
+    /// <Expr> :: <ExprOperand> <ExprOperation>
+    /// <ExprOperand> :: id <ExprCall> | literal
+    /// <ExprCall> :: <ExprFuncCall> <ExprCall>
+    ///             | <ExprArrayAccess> <ExprCall>
+    ///             | <ExprFieldAccess> <ExprCall>
+    ///             | id <ExprCall>
+    ///             | e
+    /// <ExprArrayAccess> :: [ <Expr> ] | e
+    /// <ExprFieldAccess> :: . | e
+    /// <ExprFuncCall> :: ( <ExprFuncCallArgs> ) | e
+    /// <ExprFuncCallArgs> :: <Expr> <ExprFuncCallArgs> | , <Expr> <ExprFuncCallArgs> | e
+    /// <ExprOperation> :: <UnaryOperator> <Expr> <ExprOperation> | e
+    /// <StmntElse> :: elif ( <Expr> ) { <StmntList> } <StmntElse>
+    ///              | else { <StmntList> }
+    ///              | e
+    /// <StmntDecl> :: let <DataType> id = <Expr> | const <DataType> id = <Expr>
+    /// <StmntAssign> :: id = <ExprCall> <ReassignOp> <Expr>
     fn parsing_table() -> Grammar {
         vec![
+            /*
+                <Func> :: func <DataType> id ( <FuncArgument> ) { <FuncBody> } <S>
+            */
             ParsingRule {
                 non_terminal: NonTerminal::Func,
                 token: Terminal::Token(Token::ReservedWord(ReservedWord::Function)),
@@ -76,7 +105,7 @@ impl Parser for Function {
             },
             /*
 
-                <FuncBody> ::
+                <FuncBody> :: <StmntList> | e
 
             */
             ParsingRule {
@@ -91,7 +120,7 @@ impl Parser for Function {
             },
             /*
 
-                <StmntList> ::
+                <StmntList> :: <Statement> <StmntList> | e
 
             */
             ParsingRule {
@@ -110,6 +139,13 @@ impl Parser for Function {
             /*
 
                 <Statement> ::
+                    return <Expr> ;
+                        | if ( <Expr> ) { <StmntList> } <StmntElse>
+                        | match ( <Expr> ) { <StmntCase> }
+                        | for ( <StmntDecl> ; <Expr> ; <StmntAssign> ) { <StmntList> }
+                        | while ( <Expr> ) { <StmntList> }
+                        | <StmntDecl> ;
+                        | <StmntAssign> ;
 
             */
             ParsingRule {
@@ -236,8 +272,9 @@ impl Parser for Function {
             },
             /*
 
-               <StmntCase> ::
-               todo enum access
+               <StmntCase> :: case <Literal> { <StmntList> } <StmntCase>
+                            | default { <StmntList> }
+                            | e
 
             */
             ParsingRule {
@@ -277,7 +314,7 @@ impl Parser for Function {
             },
             /*
 
-                <Expr> ::
+                <Expr> :: <ExprOperand> <ExprOperation>
 
             */
             ParsingRule {
@@ -290,7 +327,7 @@ impl Parser for Function {
             },
             /*
 
-                <ExprOperand> ::
+                <ExprOperand> :: id <ExprCall> | literal
 
             */
             ParsingRule {
@@ -309,22 +346,44 @@ impl Parser for Function {
             /*
 
                 <ExprCall> ::
+                    <ExprFuncCall> <ExprCall>
+                        | <ExprArrayAccess> <ExprCall>
+                        | <ExprFieldAccess> <ExprCall>
+                        | id <ExprCall>
+                        | e
 
             */
             ParsingRule {
                 non_terminal: NonTerminal::ExprCall,
                 token: Terminal::Token(Token::Separator(Separator::OpenParenthesis)),
-                production: vec![Symbol::NonTerminal(NonTerminal::ExprFuncCall)],
+                production: vec![
+                    Symbol::NonTerminal(NonTerminal::ExprFuncCall),
+                    Symbol::NonTerminal(NonTerminal::ExprCall),
+                ],
             },
             ParsingRule {
                 non_terminal: NonTerminal::ExprCall,
                 token: Terminal::Token(Token::Separator(Separator::OpenBrackets)),
-                production: vec![Symbol::NonTerminal(NonTerminal::ExprArrayAccess)],
+                production: vec![
+                    Symbol::NonTerminal(NonTerminal::ExprArrayAccess),
+                    Symbol::NonTerminal(NonTerminal::ExprCall)
+                ],
             },
             ParsingRule {
                 non_terminal: NonTerminal::ExprCall,
                 token: Terminal::Token(Token::Separator(Separator::Dot)),
-                production: vec![Symbol::NonTerminal(NonTerminal::ExprFieldAccess)],
+                production: vec![
+                    Symbol::NonTerminal(NonTerminal::ExprFieldAccess),
+                    Symbol::NonTerminal(NonTerminal::ExprCall),
+                ],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::ExprCall,
+                token: id,
+                production: vec![
+                    Symbol::Terminal(id),
+                    Symbol::NonTerminal(NonTerminal::ExprCall)
+                ],
             },
             ParsingRule {
                 non_terminal: NonTerminal::ExprCall,
@@ -333,7 +392,7 @@ impl Parser for Function {
             },
             /*
 
-                <ExprArrayAccess> ::
+                <ExprArrayAccess> :: [ <Expr> ] | e
 
             */
             ParsingRule {
@@ -345,9 +404,14 @@ impl Parser for Function {
                     Symbol::Terminal(Terminal::Token(Token::Separator(Separator::CloseBrackets))),
                 ],
             },
+            ParsingRule {
+                non_terminal: NonTerminal::ExprArrayAccess,
+                token: Terminal::Any,
+                production: vec![Symbol::Terminal(Terminal::Epsilon)],
+            },
             /*
 
-                <ExprFieldAccess> ::
+                <ExprFieldAccess> :: . | e
 
             */
             ParsingRule {
@@ -355,12 +419,11 @@ impl Parser for Function {
                 token: Terminal::Token(Token::Separator(Separator::Dot)),
                 production: vec![
                     Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Dot))),
-                    Symbol::Terminal(id),
                 ],
             },
             /*
 
-                <ExprFuncCall> ::
+                <ExprFuncCall> :: ( <ExprFuncCallArgs> ) | e
 
             */
             ParsingRule {
@@ -383,7 +446,7 @@ impl Parser for Function {
             },
             /*
 
-                <ExprFuncCallArgs> ::
+                <ExprFuncCallArgs> :: <Expr> <ExprFuncCallArgs> | , <Expr> <ExprFuncCallArgs> | e
 
             */
             ParsingRule {
@@ -418,7 +481,7 @@ impl Parser for Function {
             },
             /*
 
-                <ExprOperation> ::
+                <ExprOperation> :: <UnaryOperator> <Expr> <ExprOperation> | e
 
             */
             ParsingRule {
@@ -457,7 +520,9 @@ impl Parser for Function {
             },
             /*
 
-                <StmntElse> ::
+                <StmntElse> :: elif ( <Expr> ) { <StmntList> } <StmntElse>
+                            | else { <StmntList> }
+                            | e
 
             */
             ParsingRule {
@@ -503,7 +568,8 @@ impl Parser for Function {
             },
             /*
 
-                <StmntDecl> ::
+                <StmntDecl> :: let <DataType> id = <Expr>
+                            | const <DataType> id = <Expr>
 
             */
             ParsingRule {
@@ -530,7 +596,7 @@ impl Parser for Function {
             },
             /*
 
-                <StmntAssign> ::
+                <StmntAssign> :: id = <ExprCall> <ReassignOp> <Expr>
 
             */
             ParsingRule {
@@ -538,6 +604,7 @@ impl Parser for Function {
                 token: id,
                 production: vec![
                     Symbol::Terminal(id),
+                    Symbol::NonTerminal(NonTerminal::ExprCall),
                     Symbol::Terminal(Terminal::ReassignOp),
                     Symbol::NonTerminal(NonTerminal::Expr),
                 ],

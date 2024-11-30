@@ -2,7 +2,10 @@ func int test(int var, float va2) {
     let string var3 = "teste";
     let character var4 = compare('1', '2');
     let float var5 = 2.0;
-    let int jao = jao[1];
+    let int var6 = array[1][0][1];
+    struc.field[0].field2 = 1;
+    struc.field2 = 1;
+    let string var = function(struc.field[0].infield, true, false);
 }
 
 func character compare(character a, character b) {
