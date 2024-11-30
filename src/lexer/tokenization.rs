@@ -22,7 +22,7 @@ impl Splitter for str {
     /// Splits the expected code as a &str to all Separators and Operators
     fn split_code(&self) -> Vec<Option<RawToken>> {
         let re = Regex::new(&format!(
-            r#"\/\*[\S\s]*\*\/|//.*|(?:(?:[0-9])[.](?:[0-9]*)|"[\S\s]*"|{separators_and_operators})"#,
+            r#"\/\*[\S\s]*\*\/|//.*|(?:(?:[0-9])[.](?:[0-9]*)|"[\S\s]*"|'[\S\s]'|{separators_and_operators})"#,
             separators_and_operators = {
                 Separator::iter()
                     .map(|separator| regex::escape(&separator.to_string()))

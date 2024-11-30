@@ -69,27 +69,30 @@ impl TryFrom<String> for Literal {
                 .next()
                 .unwrap(),
         )) {
-            match assignment.chars().collect::<Vec<char>>().len() {
-                3 => Ok(Literal::Char(Char {
-                    open_quote: Separator::StringQuotation,
-                    content: assignment
-                        .chars()
-                        .skip(1)
-                        .take(assignment.chars().count() - 2)
-                        .next()
-                        .unwrap(),
-                    close_quote: Separator::StringQuotation,
-                })),
-                _ => Ok(Literal::Str(Str {
-                    open_quote: Separator::StringQuotation,
-                    content: assignment
-                        .chars()
-                        .skip(1)
-                        .take(assignment.chars().count() - 2)
-                        .collect(),
-                    close_quote: Separator::StringQuotation,
-                })),
-            }
+            Ok(Literal::Str(Str {
+                open_quote: Separator::StringQuotation,
+                content: assignment
+                    .chars()
+                    .skip(1)
+                    .take(assignment.chars().count() - 2)
+                    .collect(),
+                close_quote: Separator::StringQuotation,
+            }))
+        } else if assignment.chars().next().eq(&Some(
+            Separator::CharQuotation.to_string().chars().next().unwrap(),
+        )) && assignment.chars().last().eq(&Some(
+            Separator::CharQuotation.to_string().chars().next().unwrap(),
+        )) && assignment.chars().collect::<Vec<char>>().len() == 3
+        {
+            Ok(Literal::Str(Str {
+                open_quote: Separator::StringQuotation,
+                content: assignment
+                    .chars()
+                    .skip(1)
+                    .take(assignment.chars().count() - 2)
+                    .collect(),
+                close_quote: Separator::StringQuotation,
+            }))
         } else {
             Err(assignment)
         }
