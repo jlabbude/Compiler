@@ -1,5 +1,10 @@
+#![allow(non_upper_case_globals)]
+
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokens::Token;
+use crate::lexer::tokens::{Literal, Token};
+
+pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
+pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum NonTerminal {
@@ -148,7 +153,6 @@ impl ParsingRule {
             Terminal::Epsilon => false,
         }
     }
-
     pub(crate) fn parse_with_table<'a>(
         tokens: &'a [Token],
         table: &[ParsingRule],

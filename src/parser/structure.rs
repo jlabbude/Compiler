@@ -1,6 +1,6 @@
 use crate::lexer::reserved::{ReservedWord, Separator};
 use crate::lexer::tokens::Token;
-use crate::parser::function::id;
+use crate::parser::grammar::id;
 use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 pub struct Struct;

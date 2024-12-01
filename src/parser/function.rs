@@ -1,14 +1,8 @@
-#![allow(non_upper_case_globals)]
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokens::{Literal, Token};
-use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
+use crate::lexer::tokens::Token;
+use crate::parser::grammar::{id, literal, Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 // todo arraydecl
-
-// These are just a hacky way of bypassing the parser by creating "id" and "literal" terminals
-// that are always valid because of matches_token() on grammar.rs
-pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
-pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 
 pub struct Function;
 
