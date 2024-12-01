@@ -1,3 +1,13 @@
+struct Struct {
+    int field,
+    string field2,
+}
+
+enumeration Enum {
+    Option,
+    Option2,
+}
+
 func int test(int var, float va2) {
     let string var3 = "teste";
     let character var4 = compare('1', '2');

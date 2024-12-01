@@ -8,6 +8,8 @@ use crate::parser::grammar::{Parser, ParsingRule};
 use crate::parser::program::Program;
 use lexer::reserved::Separator;
 use std::path::Path;
+use crate::parser::enumeration::Enumeration;
+use crate::parser::structure::Struct;
 
 mod lexer;
 mod parser;
@@ -52,6 +54,8 @@ fn main() {
             .collect::<Tokens>();
             let table = &mut Program::parsing_table();
             table.append(&mut Function::parsing_table());
+            table.append(&mut Enumeration::parsing_table());
+            table.append(&mut Struct::parsing_table());
             println!(
                 "{:?}",
                 match ParsingRule::parse_with_table(&tokens, table) {

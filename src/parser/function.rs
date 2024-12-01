@@ -4,22 +4,19 @@ use crate::lexer::tokens::{Literal, Token};
 use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 // todo arraydecl
-// todo multidimensional arrayaccess
-// todo structdecl
-// todo enumdecl
 
 // These are just a hacky way of bypassing the parser by creating "id" and "literal" terminals
 // that are always valid because of matches_token() on grammar.rs
-const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
-const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
+pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
+pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 
 pub struct Function;
 
 impl Parser for Function {
     /// <Func> :: func <DataType> id ( <FuncArgument> ) { <FuncBody> } <S>
     /// <FuncArgument> :: <DataType> id <FuncArgument> | , <DataType> id <FuncArgument> | e
-    /// <FuncBody> :: <StmntList> | e
-    /// <StmntList> :: <Statement> <StmntList> | e
+    /// <FuncBody> :: <StmntList> | ε
+    /// <StmntList> :: <Statement> <StmntList> | ε
     /// <Statement> :: return <Expr> ;
     ///             | if ( <Expr> ) { <StmntList> } <StmntElse>
     ///             | match ( <Expr> ) { <StmntCase> }
@@ -27,22 +24,22 @@ impl Parser for Function {
     ///             | while ( <Expr> ) { <StmntList> }
     ///             | <StmntDecl> ;
     ///             | <StmntAssign> ;
-    /// <StmntCase> :: case <Literal> { <StmntList> } <StmntCase> | default { <StmntList> } | e
+    /// <StmntCase> :: case <Literal> { <StmntList> } <StmntCase> | default { <StmntList> } | ε
     /// <Expr> :: <ExprOperand> <ExprOperation>
     /// <ExprOperand> :: id <ExprCall> | literal
     /// <ExprCall> :: <ExprFuncCall> <ExprCall>
     ///             | <ExprArrayAccess> <ExprCall>
     ///             | <ExprFieldAccess> <ExprCall>
     ///             | id <ExprCall>
-    ///             | e
-    /// <ExprArrayAccess> :: [ <Expr> ] | e
-    /// <ExprFieldAccess> :: . | e
-    /// <ExprFuncCall> :: ( <ExprFuncCallArgs> ) | e
-    /// <ExprFuncCallArgs> :: <Expr> <ExprFuncCallArgs> | , <Expr> <ExprFuncCallArgs> | e
-    /// <ExprOperation> :: <UnaryOperator> <Expr> <ExprOperation> | e
+    ///             | ε
+    /// <ExprArrayAccess> :: [ <Expr> ] | ε
+    /// <ExprFieldAccess> :: . | ε
+    /// <ExprFuncCall> :: ( <ExprFuncCallArgs> ) | ε
+    /// <ExprFuncCallArgs> :: <Expr> <ExprFuncCallArgs> | , <Expr> <ExprFuncCallArgs> | ε
+    /// <ExprOperation> :: <UnaryOperator> <Expr> <ExprOperation> | ε
     /// <StmntElse> :: elif ( <Expr> ) { <StmntList> } <StmntElse>
     ///              | else { <StmntList> }
-    ///              | e
+    ///              | ε
     /// <StmntDecl> :: let <DataType> id = <Expr> | const <DataType> id = <Expr>
     /// <StmntAssign> :: id = <ExprCall> <ReassignOp> <Expr>
     fn parsing_table() -> Grammar {

@@ -30,6 +30,8 @@ pub enum NonTerminal {
     StmntElse,
     StmntCase,
     ExprCall,
+    EnumBody,
+    StructBody,
 }
 
 pub enum Statement {

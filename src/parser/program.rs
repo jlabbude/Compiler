@@ -5,6 +5,7 @@ use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, 
 pub struct Program;
 
 impl Parser for Program {
+    /// <Program> :: <Func> | <Enum> | <Struct> | ε
     fn parsing_table() -> Grammar {
         vec![
             ParsingRule {
@@ -12,7 +13,16 @@ impl Parser for Program {
                 token: Terminal::Token(Token::ReservedWord(ReservedWord::Function)),
                 production: vec![Symbol::NonTerminal(NonTerminal::Func)],
             },
-            // has to be last
+            ParsingRule {
+                non_terminal: NonTerminal::Program,
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::Enum)),
+                production: vec![Symbol::NonTerminal(NonTerminal::Enum)],
+            },
+            ParsingRule {
+                non_terminal: NonTerminal::Program,
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::Struct)),
+                production: vec![Symbol::NonTerminal(NonTerminal::Struct)],
+            },
             ParsingRule {
                 non_terminal: NonTerminal::Program,
                 token: Terminal::Any,

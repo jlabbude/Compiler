@@ -24,5 +24,6 @@ func int main() {
 
 ## Roadmap
 - [X] Lexical analysis
-- [ ] Syntax analysis (80%)
+- [ ] Syntax analysis (99%)
+  - [ ] AST generation
 - [ ] Semantic analysis
