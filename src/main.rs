@@ -70,7 +70,9 @@ fn main() {
                 raw != "" && raw != "\n" && raw != " " && !raw.starts_with("//") && !raw.starts_with("/*")
             }).collect();
             tokens.iter().zip(raw_tokens.iter()).for_each(|(token, a)| {
-                lexical_output.write_all(format!("{:?},{:?}\n", token, a).as_bytes()).unwrap();
+                let token = format!("{:?}", token).chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>();
+                let a = a.chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>();
+                lexical_output.write_all(format!("{},{}\n", token, a).as_bytes()).unwrap();
             });
             let table = &mut Program::parsing_table();
             table.append(&mut Function::parsing_table());
@@ -85,8 +87,8 @@ fn main() {
                                 .iter()
                                 .skip(1)
                                 .map(|symbol| match symbol {
-                                    Symbol::Terminal(terminal) => format!("{terminal:?} "),
-                                    Symbol::NonTerminal(non_terminal) => format!("<{non_terminal:?}> "),
+                                    Symbol::Terminal(terminal) => format!("{terminal:?} ").chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>(),
+                                    Symbol::NonTerminal(non_terminal) => format!("<{non_terminal:?}> ").chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>(),
                                 })
                                 .collect::<String>()
                         }).as_bytes()).unwrap();
