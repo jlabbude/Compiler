@@ -70,7 +70,7 @@ fn main() {
                 raw != "" && raw != "\n" && raw != " " && !raw.starts_with("//") && !raw.starts_with("/*")
             }).collect();
             tokens.iter().zip(raw_tokens.iter()).for_each(|(token, a)| {
-                let token = format!("{:?}", token).chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>();
+                let token = format!("{:?}", token).chars().into_iter().filter(|c| *c != '"' && *c != '\'' && *c != ',').collect::<String>();
                 let a = if a == "," {
                     "Comma".to_string()
                 } else {

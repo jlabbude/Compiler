@@ -13,7 +13,7 @@ ReservedWord(Let),let
 ReservedWord(Str),string
 Identifier(var3),var3
 Operator(Assignment),=
-Literal(Str(Str { open_quote: StringQuotation, content: teste, close_quote: StringQuotation })),teste
+Literal(Str(Str { open_quote: StringQuotation content: teste close_quote: StringQuotation })),teste
 Separator(Terminator),;
 ReservedWord(Let),let
 ReservedWord(Char),character
@@ -21,9 +21,9 @@ Identifier(var4),var4
 Operator(Assignment),=
 Identifier(compare),compare
 Separator(OpenParenthesis),(
-Literal(Str(Str { open_quote: StringQuotation, content: 1, close_quote: StringQuotation })),1
+Literal(Str(Str { open_quote: StringQuotation content: 1 close_quote: StringQuotation })),1
 Separator(Comma),Comma
-Literal(Str(Str { open_quote: StringQuotation, content: 2, close_quote: StringQuotation })),2
+Literal(Str(Str { open_quote: StringQuotation content: 2 close_quote: StringQuotation })),2
 Separator(CloseParenthesis),)
 Separator(Terminator),;
 ReservedWord(Let),let
@@ -100,7 +100,7 @@ ReservedWord(Constant),const
 ReservedWord(Char),character
 Identifier(c),c
 Operator(Assignment),=
-Literal(Str(Str { open_quote: StringQuotation, content: 0, close_quote: StringQuotation })),0
+Literal(Str(Str { open_quote: StringQuotation content: 0 close_quote: StringQuotation })),0
 Separator(Terminator),;
 ReservedWord(For),for
 Separator(OpenParenthesis),(
@@ -142,26 +142,26 @@ Identifier(a),a
 Separator(CloseParenthesis),)
 Separator(OpenCurlyBraces),{
 ReservedWord(Case),case
-Literal(Str(Str { open_quote: StringQuotation, content: 1, close_quote: StringQuotation })),1
+Literal(Str(Str { open_quote: StringQuotation content: 1 close_quote: StringQuotation })),1
 Separator(OpenCurlyBraces),{
 Identifier(a),a
 Operator(Assignment),=
-Literal(Str(Str { open_quote: StringQuotation, content: 1, close_quote: StringQuotation })),1
+Literal(Str(Str { open_quote: StringQuotation content: 1 close_quote: StringQuotation })),1
 Separator(Terminator),;
 Separator(CloseCurlyBraces),}
 ReservedWord(Case),case
-Literal(Str(Str { open_quote: StringQuotation, content: 2, close_quote: StringQuotation })),2
+Literal(Str(Str { open_quote: StringQuotation content: 2 close_quote: StringQuotation })),2
 Separator(OpenCurlyBraces),{
 Identifier(a),a
 Operator(Assignment),=
-Literal(Str(Str { open_quote: StringQuotation, content: 2, close_quote: StringQuotation })),2
+Literal(Str(Str { open_quote: StringQuotation content: 2 close_quote: StringQuotation })),2
 Separator(Terminator),;
 Separator(CloseCurlyBraces),}
 ReservedWord(Default),default
 Separator(OpenCurlyBraces),{
 Identifier(a),a
 Operator(Assignment),=
-Literal(Str(Str { open_quote: StringQuotation, content: 3, close_quote: StringQuotation })),3
+Literal(Str(Str { open_quote: StringQuotation content: 3 close_quote: StringQuotation })),3
 Separator(Terminator),;
 Separator(CloseCurlyBraces),}
 Separator(CloseCurlyBraces),}
