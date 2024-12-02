@@ -4,7 +4,7 @@ Identifier(test),test
 Separator(OpenParenthesis),(
 ReservedWord(Int),int
 Identifier(var),var
-Separator(Comma),,
+Separator(Comma),Comma
 ReservedWord(Float),float
 Identifier(va2),va2
 Separator(CloseParenthesis),)
@@ -22,7 +22,7 @@ Operator(Assignment),=
 Identifier(compare),compare
 Separator(OpenParenthesis),(
 Literal(Str(Str { open_quote: StringQuotation, content: 1, close_quote: StringQuotation })),1
-Separator(Comma),,
+Separator(Comma),Comma
 Literal(Str(Str { open_quote: StringQuotation, content: 2, close_quote: StringQuotation })),2
 Separator(CloseParenthesis),)
 Separator(Terminator),;
@@ -78,9 +78,9 @@ Literal(Int(0)),0
 Separator(CloseBrackets),]
 Separator(Dot),.
 Identifier(infield),infield
-Separator(Comma),,
+Separator(Comma),Comma
 Literal(Bool(True)),true
-Separator(Comma),,
+Separator(Comma),Comma
 Literal(Bool(False)),false
 Separator(CloseParenthesis),)
 Separator(Terminator),;
@@ -91,7 +91,7 @@ Identifier(compare),compare
 Separator(OpenParenthesis),(
 ReservedWord(Char),character
 Identifier(a),a
-Separator(Comma),,
+Separator(Comma),Comma
 ReservedWord(Char),character
 Identifier(b),b
 Separator(CloseParenthesis),)

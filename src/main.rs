@@ -71,7 +71,11 @@ fn main() {
             }).collect();
             tokens.iter().zip(raw_tokens.iter()).for_each(|(token, a)| {
                 let token = format!("{:?}", token).chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>();
-                let a = a.chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>();
+                let a = if a == "," {
+                    "Comma".to_string()
+                } else {
+                    a.chars().into_iter().filter(|c| *c != '"' && *c != '\'').collect::<String>()
+                };
                 lexical_output.write_all(format!("{},{}\n", token, a).as_bytes()).unwrap();
             });
             let table = &mut Program::parsing_table();
