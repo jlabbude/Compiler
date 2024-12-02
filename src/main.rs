@@ -1,10 +1,12 @@
 #![allow(dead_code)]
 extern crate core;
 
-use crate::lexer::tokenization::tokenize;
+use std::fs::File;
+use std::io::Write;
+use crate::lexer::tokenization::{tokenize, Splitter};
 use crate::lexer::tokens::Token;
 use crate::parser::function::Function;
-use crate::parser::grammar::{Parser, ParsingRule};
+use crate::parser::grammar::{Parser, ParsingRule, Symbol};
 use crate::parser::program::Program;
 use lexer::reserved::Separator;
 use std::path::Path;
@@ -37,35 +39,64 @@ fn main() {
     };
     match check_file(source_file) {
         Ok(_) => {
-            let tokens = tokenize(
-                &std::fs::read_to_string(source_file)
-                    .unwrap()
-                    .replace("\r\n", "\n"), // windows newline
-            )
-            .into_iter()
-            .filter(|token| {
-                !matches!(
-                    token,
-                    Token::Separator(Separator::WhiteSpace)
-                        | Token::Separator(Separator::NewLine)
-                        | Token::Comment(_)
-                )
-            })
-            .collect::<Tokens>();
+            let code =  &std::fs::read_to_string(source_file)
+                .unwrap()
+                .replace("\r\n", "\n");
+            let mut lexical_output = File::create("output/lexical_output.csv").unwrap();
+            let tokens = tokenize(code)
+                .into_iter()
+                .filter(|token| {
+                    !matches!(
+                        token,
+                        Token::Separator(Separator::WhiteSpace)
+                            | Token::Separator(Separator::NewLine)
+                            | Token::Comment(_)
+                    )
+                })
+                .collect::<Tokens>();
+            let raw_tokens: Vec<String> = code.split_code().into_iter().map(|raw| {
+                let raw = match raw {
+                    Some(raw) => raw,
+                    None => return "".to_string(),
+                };
+                match Token::try_from(raw) {
+                    Ok(_token) => raw.1.to_string(),
+                    Err(e) => {
+                        eprintln!("{}", e);
+                        std::process::exit(1);
+                    }
+                }
+            }).filter(|raw| {
+                raw != "" && raw != "\n" && raw != " " && !raw.starts_with("//") && !raw.starts_with("/*")
+            }).collect();
+            tokens.iter().zip(raw_tokens.iter()).for_each(|(token, a)| {
+                lexical_output.write_all(format!("{:?},{:?}\n", token, a).as_bytes()).unwrap();
+            });
             let table = &mut Program::parsing_table();
             table.append(&mut Function::parsing_table());
             table.append(&mut Enumeration::parsing_table());
             table.append(&mut Struct::parsing_table());
-            println!(
-                "{:?}",
-                match ParsingRule::parse_with_table(&tokens, table) {
-                    Ok(x) => x,
-                    Err(err) => {
-                        eprintln!("{}", err);
-                        std::process::exit(1);
-                    }
+            let mut syntax_output = File::create("output/syntax_output.csv").unwrap();
+            match ParsingRule::parse_with_table(&tokens, table) {
+                Ok(x) => {
+                    x.into_iter().for_each(|(nt, production)| {
+                        syntax_output.write_all(format!("<{:?}>,{production}\n", nt, production = {
+                            production
+                                .iter()
+                                .skip(1)
+                                .map(|symbol| match symbol {
+                                    Symbol::Terminal(terminal) => format!("{terminal:?} "),
+                                    Symbol::NonTerminal(non_terminal) => format!("<{non_terminal:?}> "),
+                                })
+                                .collect::<String>()
+                        }).as_bytes()).unwrap();
+                    });
+                },
+                Err(err) => {
+                    eprintln!("{}", err);
+                    std::process::exit(1);
                 }
-            );
+            }
             /*tokens.iter().for_each(|expression| match expression {
                 Token::ReservedWord(_)
                 | Token::Literal(_)

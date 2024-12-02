@@ -7,6 +7,8 @@ pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
 pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 
 #[derive(Debug, Clone, PartialEq)]
+#[derive(Hash)]
+#[derive(Eq)]
 pub enum NonTerminal {
     Program,
     Struct,
@@ -153,17 +155,20 @@ impl ParsingRule {
             Terminal::Epsilon => false,
         }
     }
-    pub(crate) fn parse_with_table<'a>(
-        tokens: &'a [Token],
+    pub(crate) fn parse_with_table(
+        tokens: &[Token],
         table: &[ParsingRule],
-    ) -> Result<&'a [Token], String> {
+    ) -> Result<Vec<(NonTerminal, Vec<Symbol>)>, String> {
         let mut stack = vec![Symbol::NonTerminal(NonTerminal::Program)];
         let mut pos = 0;
-        let start_pos = pos;
+        let mut raw_productions = Vec::new();
 
         while let Some(top) = stack.pop() {
             match top {
-                Symbol::Terminal(expected) => {
+                Symbol::Terminal(mut expected) => {
+                    if let Token::Identifier(identifier) = tokens.get(pos).unwrap() {
+                        expected = Terminal::Token(Token::Identifier(identifier.clone()));
+                    }
                     if ParsingRule::matches_token(
                         &expected.clone(),
                         tokens
@@ -192,6 +197,7 @@ impl ParsingRule {
                             None => continue,
                         },
                     ) {
+                        let local_tokens = rule.production.clone();
                         rule.production
                             .iter()
                             .rev()
@@ -199,6 +205,7 @@ impl ParsingRule {
                             .for_each(|symbol| {
                                 stack.push(symbol.clone());
                             });
+                        raw_productions.push((nt, local_tokens));
                     } else {
                         return Err(format!(
                             "No rule for NonTerminal {:?} with token {:?} at position {pos}",
@@ -211,9 +218,68 @@ impl ParsingRule {
         }
 
         if pos <= tokens.len() {
-            Ok(&tokens[start_pos..pos])
+            Ok(join_rules(raw_productions))
         } else {
             Err(format!("Unconsumed input at position {}", pos))
         }
     }
+}
+
+fn join_rules(
+    raw_productions: Vec<(NonTerminal, Vec<Symbol>)>,
+) -> Vec<(NonTerminal, Vec<Symbol>)> {
+    fn expand_non_terminal(
+        nt: &NonTerminal,
+        productions: &[(NonTerminal, Vec<Symbol>)],
+        visited: &mut Vec<NonTerminal>,
+    ) -> Vec<Symbol> {
+        if visited.contains(nt) {
+            return vec![Symbol::NonTerminal(nt.clone())];
+        }
+        visited.push(nt.clone());
+        if let Some((_, production)) = productions.iter().find(|(lhs, _)| lhs == nt) {
+            let mut expanded = Vec::new();
+            for symbol in production {
+                match symbol {
+                    Symbol::NonTerminal(inner_nt) => {
+                        expanded.extend(expand_non_terminal(inner_nt, productions, visited));
+                    }
+                    other => expanded.push(other.clone()),
+                }
+            }
+            visited.pop();
+            expanded
+        } else {
+            panic!("Unmatched NonTerminal: {:?}", nt);
+        }
+    }
+
+    let mut final_productions = Vec::new();
+
+    for (nt, production) in &raw_productions {
+        let mut expanded = Vec::new();
+        let mut visited = Vec::new(); // Track visited nodes to prevent infinite recursion
+        for symbol in production {
+            match symbol {
+                Symbol::NonTerminal(inner_nt) => {
+                    expanded.extend(expand_non_terminal(inner_nt, &raw_productions, &mut visited));
+                }
+                other => expanded.push(other.clone()),
+            }
+        }
+        final_productions.push((nt.clone(), expanded));
+    }
+
+    final_productions
+        .iter()
+        .map(|(nt, production)| {
+            (
+                nt.clone(),
+                vec![Symbol::NonTerminal(nt.clone())]
+                    .into_iter()
+                    .chain(production.clone())
+                    .collect(),
+            )
+        })
+        .collect()
 }

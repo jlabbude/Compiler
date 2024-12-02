@@ -9,9 +9,9 @@ Find the documentation [here](https://jlabbude.github.io) (PT-BR)
 
 ## Examples
 
-- [Example input file](https://github.com/jlabbude/Compiler/blob/main/input.nh)
-  - [Output (Lexical analysis)](https://github.com/jlabbude/Compiler/blob/main/output/output.txt)
-  - [Organized tokens (CSV)](https://github.com/jlabbude/Compiler/blob/main/output/output.csv)
+- [Example input file](https://github.com/jlabbude/Compiler/blob/main/input.glim)
+  - [Output (Lexical analysis)](https://github.com/jlabbude/Compiler/blob/main/output/lexical_output.txt)
+  - [Output (Syntax analysis)](https://github.com/jlabbude/Compiler/blob/main/output/syntax_output.csv)
 
 ## Example
 
@@ -24,6 +24,5 @@ func int main() {
 
 ## Roadmap
 - [X] Lexical analysis
-- [ ] Syntax analysis (99%)
-  - [ ] AST generation
+- [ ] Syntax analysis (99.9%)
 - [ ] Semantic analysis
