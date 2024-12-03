@@ -1,4 +1,4 @@
-use crate::lexer::reserved::ReservedWord;
+use crate::lexer::reserved::{ReservedWord, Separator};
 use crate::lexer::tokens::Token;
 use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
@@ -25,7 +25,7 @@ impl Parser for Program {
             },
             ParsingRule {
                 non_terminal: NonTerminal::Program,
-                token: Terminal::Any,
+                token: Terminal::Token(Token::Separator(Separator::CloseCurlyBraces)),
                 production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },
         ]

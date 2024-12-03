@@ -1,10 +1,21 @@
 #![allow(non_upper_case_globals)]
 
+use strum_macros::Display;
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokens::{Literal, Token};
 
 pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
 pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
+
+#[derive(Display)]
+pub enum SyntaxError {
+    #[strum(serialize = "Syntax error: {0}")]
+    UnexpectedToken(String),
+    #[strum(serialize = "Syntax error: {0}")]
+    NoRule(String),
+    #[strum(serialize = "Syntax error: {0}")]
+    UnconsumedInput(String),
+}
 
 #[derive(Debug, Clone, PartialEq, Hash, Eq)]
 pub enum NonTerminal {
@@ -155,7 +166,7 @@ impl ParsingRule {
     pub(crate) fn parse_with_table(
         tokens: &[Token],
         table: &[ParsingRule],
-    ) -> Result<Vec<(NonTerminal, Vec<Symbol>)>, String> {
+    ) -> Result<Vec<(NonTerminal, Vec<Symbol>)>, SyntaxError> {
         let mut stack = vec![Symbol::NonTerminal(NonTerminal::Program)];
         let mut pos = 0;
         let mut raw_productions: Vec<(NonTerminal, Vec<Symbol>)> = Vec::new();
@@ -166,8 +177,11 @@ impl ParsingRule {
                     if let Token::Identifier(identifier) = tokens.get(pos).unwrap() {
                         let len = (*raw_productions).len() - 1;
                         raw_productions[len].1.iter_mut().for_each(|symbol| {
-                            if let Symbol::Terminal(Terminal::Token(Token::Identifier(_))) = symbol {
-                                *symbol = Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone())));
+                            if let Symbol::Terminal(Terminal::Token(Token::Identifier(_))) = symbol
+                            {
+                                *symbol = Symbol::Terminal(Terminal::Token(Token::Identifier(
+                                    identifier.clone(),
+                                )));
                             }
                         });
                     }
@@ -183,11 +197,11 @@ impl ParsingRule {
                             continue;
                         }
                     } else {
-                        return Err(format!(
+                        return Err(SyntaxError::UnexpectedToken(format!(
                             "Expected {:?}, found {:?}, at {pos}",
                             expected,
                             tokens.get(pos),
-                        ));
+                        )));
                     }
                 }
                 Symbol::NonTerminal(nt) => {
@@ -209,11 +223,11 @@ impl ParsingRule {
                             });
                         raw_productions.push((nt, local_tokens));
                     } else {
-                        return Err(format!(
+                        return Err(SyntaxError::NoRule(format!(
                             "No rule for NonTerminal {:?} with token {:?} at position {pos}",
                             nt,
                             tokens.get(pos)
-                        ));
+                        )));
                     }
                 }
             }
@@ -222,7 +236,10 @@ impl ParsingRule {
         if pos <= tokens.len() {
             Ok(raw_productions)
         } else {
-            Err(format!("Unconsumed input at position {}", pos))
+            Err(SyntaxError::UnconsumedInput(format!(
+                "Unconsumed input at position {}",
+                pos
+            )))
         }
     }
 }

@@ -73,7 +73,9 @@ fn main() {
                         && !raw.starts_with("/*")
                 })
                 .collect();
-            lexical_output.write_all("\"Token\",\"Raw token\"\n".as_bytes()).unwrap();
+            lexical_output
+                .write_all("\"Token\",\"Raw token\"\n".as_bytes())
+                .unwrap();
             tokens.iter().zip(raw_tokens.iter()).for_each(|(token, a)| {
                 lexical_output
                     .write_all(
@@ -93,7 +95,9 @@ fn main() {
             let mut syntax_output = File::create("output/syntax_output.csv").unwrap();
             match ParsingRule::parse_with_table(&tokens, table) {
                 Ok(x) => {
-                    syntax_output.write_all("\"<Rule>\",\"Production\"\n".as_bytes()).unwrap();
+                    syntax_output
+                        .write_all("\"<Rule>\",\"Production\"\n".as_bytes())
+                        .unwrap();
                     x.into_iter().for_each(|(nt, production)| {
                         syntax_output
                             .write_all(
@@ -105,10 +109,15 @@ fn main() {
                                             .iter()
                                             .map(|symbol| match symbol {
                                                 Symbol::Terminal(terminal) => {
-                                                    format!("{terminal:?} ").as_str().csv_formatter().replace("Epsilon", "\u{03b5}")
+                                                    format!("{terminal:?} ")
+                                                        .as_str()
+                                                        .csv_formatter()
+                                                        .replace("Epsilon", "\u{03b5}")
                                                 }
                                                 Symbol::NonTerminal(non_terminal) => {
-                                                    format!("<{non_terminal:?}> ").as_str().csv_formatter()
+                                                    format!("<{non_terminal:?}> ")
+                                                        .as_str()
+                                                        .csv_formatter()
                                                 }
                                             })
                                             .collect::<String>()
@@ -120,22 +129,10 @@ fn main() {
                     });
                 }
                 Err(err) => {
-                    eprintln!("{}", err);
+                    eprintln!("{err}");
                     std::process::exit(1);
                 }
             }
-            /*tokens.iter().for_each(|expression| match expression {
-                Token::ReservedWord(_)
-                | Token::Literal(_)
-                | Token::Identifier(_)
-                | Token::Comment(_)
-                | Token::Operator(_) => print!("{expression:?} "),
-                Token::Separator(separator) => match separator {
-                    Separator::NewLine => print!("{}", Separator::NewLine),
-                    Separator::WhiteSpace => print!("{}", Separator::WhiteSpace),
-                    _ => print!("{expression:?} "),
-                },
-            });*/
         }
         Err(e) => {
             println!("{}", e);

@@ -95,7 +95,7 @@ impl Splitter for str {
         self.chars()
             .into_iter()
             .collect::<String>()
-            .replace("\"","\"\"")
+            .replace("\"", "\"\"")
     }
 }
 
