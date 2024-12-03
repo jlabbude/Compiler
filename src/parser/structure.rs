@@ -15,9 +15,13 @@ impl Parser for Struct {
                 production: vec![
                     Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Struct))),
                     Symbol::Terminal(id),
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::OpenCurlyBraces))),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::OpenCurlyBraces,
+                    ))),
                     Symbol::NonTerminal(NonTerminal::StructBody),
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::CloseCurlyBraces))),
+                    Symbol::Terminal(Terminal::Token(Token::Separator(
+                        Separator::CloseCurlyBraces,
+                    ))),
                     Symbol::NonTerminal(NonTerminal::Program),
                 ],
             },

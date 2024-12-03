@@ -1,6 +1,8 @@
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokens::Token;
-use crate::parser::grammar::{id, literal, Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
+use crate::parser::grammar::{
+    id, literal, Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal,
+};
 
 // todo arraydecl
 
@@ -357,7 +359,7 @@ impl Parser for Function {
                 token: Terminal::Token(Token::Separator(Separator::OpenBrackets)),
                 production: vec![
                     Symbol::NonTerminal(NonTerminal::ExprArrayAccess),
-                    Symbol::NonTerminal(NonTerminal::ExprCall)
+                    Symbol::NonTerminal(NonTerminal::ExprCall),
                 ],
             },
             ParsingRule {
@@ -373,7 +375,7 @@ impl Parser for Function {
                 token: id,
                 production: vec![
                     Symbol::Terminal(id),
-                    Symbol::NonTerminal(NonTerminal::ExprCall)
+                    Symbol::NonTerminal(NonTerminal::ExprCall),
                 ],
             },
             ParsingRule {
@@ -408,9 +410,9 @@ impl Parser for Function {
             ParsingRule {
                 non_terminal: NonTerminal::ExprFieldAccess,
                 token: Terminal::Token(Token::Separator(Separator::Dot)),
-                production: vec![
-                    Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Dot))),
-                ],
+                production: vec![Symbol::Terminal(Terminal::Token(Token::Separator(
+                    Separator::Dot,
+                )))],
             },
             /*
 

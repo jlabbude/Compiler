@@ -6,9 +6,7 @@ use crate::lexer::tokens::{Literal, Token};
 pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
 pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 
-#[derive(Debug, Clone, PartialEq)]
-#[derive(Hash)]
-#[derive(Eq)]
+#[derive(Debug, Clone, PartialEq, Hash, Eq)]
 pub enum NonTerminal {
     Program,
     Struct,
@@ -142,10 +140,9 @@ impl ParsingRule {
             }
             Terminal::ReassignOp => {
                 if let Token::Operator(op) = actual {
-                    matches!(op,
-                        Operator::Assignment
-                            | Operator::Increment
-                            | Operator::Decrement
+                    matches!(
+                        op,
+                        Operator::Assignment | Operator::Increment | Operator::Decrement
                     )
                 } else {
                     false
@@ -161,13 +158,18 @@ impl ParsingRule {
     ) -> Result<Vec<(NonTerminal, Vec<Symbol>)>, String> {
         let mut stack = vec![Symbol::NonTerminal(NonTerminal::Program)];
         let mut pos = 0;
-        let mut raw_productions = Vec::new();
+        let mut raw_productions: Vec<(NonTerminal, Vec<Symbol>)> = Vec::new();
 
         while let Some(top) = stack.pop() {
             match top {
-                Symbol::Terminal(mut expected) => {
+                Symbol::Terminal(expected) => {
                     if let Token::Identifier(identifier) = tokens.get(pos).unwrap() {
-                        expected = Terminal::Token(Token::Identifier(identifier.clone()));
+                        let len = (*raw_productions).len() - 1;
+                        raw_productions[len].1.iter_mut().for_each(|symbol| {
+                            if let Symbol::Terminal(Terminal::Token(Token::Identifier(_))) = symbol {
+                                *symbol = Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone())));
+                            }
+                        });
                     }
                     if ParsingRule::matches_token(
                         &expected.clone(),
@@ -218,16 +220,15 @@ impl ParsingRule {
         }
 
         if pos <= tokens.len() {
-            Ok(join_rules(raw_productions))
+            Ok(raw_productions)
         } else {
             Err(format!("Unconsumed input at position {}", pos))
         }
     }
 }
 
-fn join_rules(
-    raw_productions: Vec<(NonTerminal, Vec<Symbol>)>,
-) -> Vec<(NonTerminal, Vec<Symbol>)> {
+#[deprecated]
+fn join_rules(raw_productions: Vec<(NonTerminal, Vec<Symbol>)>) -> Vec<(NonTerminal, Vec<Symbol>)> {
     fn expand_non_terminal(
         nt: &NonTerminal,
         productions: &[(NonTerminal, Vec<Symbol>)],
@@ -262,7 +263,11 @@ fn join_rules(
         for symbol in production {
             match symbol {
                 Symbol::NonTerminal(inner_nt) => {
-                    expanded.extend(expand_non_terminal(inner_nt, &raw_productions, &mut visited));
+                    expanded.extend(expand_non_terminal(
+                        inner_nt,
+                        &raw_productions,
+                        &mut visited,
+                    ));
                 }
                 other => expanded.push(other.clone()),
             }

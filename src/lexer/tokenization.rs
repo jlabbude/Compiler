@@ -16,6 +16,7 @@ pub trait Splitter {
     fn split_and_parse_jp_numerals<T>(&self) -> Result<T, &Self>
     where
         T: str::FromStr + Copy + PartialEq + PartialOrd;
+    fn csv_formatter(&self) -> String;
 }
 
 impl Splitter for str {
@@ -88,6 +89,13 @@ impl Splitter for str {
             Err(wa) => wa.parse::<T>(),
         }
         .map_err(|_| self)
+    }
+
+    fn csv_formatter(&self) -> String {
+        self.chars()
+            .into_iter()
+            .collect::<String>()
+            .replace("\"","\"\"")
     }
 }
 
