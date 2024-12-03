@@ -1,1 +1,48 @@
-int jao()
+struct Struc {
+    int field,
+    string field2
+}
+
+enumeration Enum {
+    Variant1,
+    Variant2
+}
+
+func int test(int var, float va2) {
+    let string var3 = "teste";
+    let character var4 = compare('1', '2');
+    let float var5 = 2.0;
+    let int var6 = array[1][0][1];
+    struc.field[0].field2 = 1;
+    struc.field2 = 1;
+    let string var = function(struc.field[0].infield, true, false);
+}
+
+func character compare(character a, character b) {
+    const character c = '0';
+
+    for(let int i = 0; i < 10; i += 1) {
+        a += 1;
+    }
+    while(a < b) {
+        a += 1;
+    }
+    match(a) {
+        case '1' {
+            a = '1';
+        }
+        case '2' {
+            a = '2';
+        }
+        default {
+            a = '3';
+        }
+    }
+    if (a > b) {
+        return a;
+    } elif (a < b) {
+        return b;
+    } else {
+        return c;
+    }
+}
