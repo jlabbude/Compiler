@@ -2,7 +2,7 @@
 
 Glimpse is a statically, manifested, strongly typed language. With heavy inspiration from C and Rust (the language the compiler is written in).
 
-To use the language, use a file with the `.glim` extension as an argument when executing the [executable](https://github.com/jlabbude/Compiler/releases/tag/exe).
+To use the language, use a file with the `.glim` extension as the first argument.
 
 ## Documentation
 Find the documentation [here](https://jlabbude.github.io) (PT-BR)
