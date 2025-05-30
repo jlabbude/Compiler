@@ -1,8 +1,8 @@
 #![allow(non_upper_case_globals)]
 
-use strum_macros::Display;
 use crate::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::lexer::tokens::{Literal, Token};
+use strum_macros::Display;
 
 pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
 pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));

@@ -9,6 +9,7 @@ use crate::parser::grammar::{
 pub struct Function;
 
 impl Parser for Function {
+    /// @formatter:off
     /// <Func> :: func <DataType> id ( <FuncArgument> ) { <FuncBody> } <S>
     /// <FuncArgument> :: <DataType> id <FuncArgument> | , <DataType> id <FuncArgument> | e
     /// <FuncBody> :: <StmntList> | ε
