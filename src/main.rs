@@ -1,14 +1,14 @@
 #![allow(dead_code)]
 extern crate core;
 
-use front::lexer::tokenization::{tokenize, Splitter};
+use front::lexer::reserved::Separator;
+use front::lexer::tokenization::tokenize;
 use front::lexer::tokens::Token;
 use front::parser::enumeration::Enumeration;
 use front::parser::function::Function;
-use front::parser::grammar::{Grammar, Parser, ParsingRule};
+use front::parser::grammar::{Parser, ParsingRule};
 use front::parser::program::Program;
 use front::parser::structure::Struct;
-use front::lexer::reserved::Separator;
 use std::path::Path;
 
 mod csv_output;
@@ -51,12 +51,13 @@ fn main() {
                 .collect::<Tokens>();
             match ParsingRule::parse_with_table(
                 &tokens,
-                &Program::parsing_table()
-                    .into_iter()
-                    .chain(Function::parsing_table())
-                    .chain(Enumeration::parsing_table())
-                    .chain(Struct::parsing_table())
-                    .collect::<Grammar>(),
+                &[
+                    Program::PARSING_TABLE,
+                    Function::PARSING_TABLE,
+                    Enumeration::PARSING_TABLE,
+                    Struct::PARSING_TABLE,
+                ] //fixme datatype check sytnh
+                .concat(),
             ) {
                 Ok(table_output) => {
                     csv_output::lexical_csv_output(code, &tokens);

@@ -84,14 +84,13 @@ impl TryFrom<String> for Literal {
             Separator::CharQuotation.to_string().chars().next().unwrap(),
         )) && assignment.chars().collect::<Vec<char>>().len() == 3
         {
-            Ok(Literal::Str(Str {
-                open_quote: Separator::StringQuotation,
+            Ok(Literal::Char(Char {
+                open_quote: Separator::CharQuotation,
                 content: assignment
                     .chars()
-                    .skip(1)
-                    .take(assignment.chars().count() - 2)
-                    .collect(),
-                close_quote: Separator::StringQuotation,
+                    .nth(1)
+                    .ok_or_else(|| "Invalid char literal".to_string())?,
+                close_quote: Separator::CharQuotation,
             }))
         } else {
             Err(assignment)

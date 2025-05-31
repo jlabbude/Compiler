@@ -37,7 +37,7 @@ pub fn ast_csv_output(table_output: Vec<(NonTerminal, Vec<Symbol>)>) {
     });
 }
 
-pub fn lexical_csv_output(code: &String, tokens: &Tokens) {
+pub fn lexical_csv_output(code: &str, tokens: &Tokens) {
     let mut lexical_output = File::create("output/lexical_output.csv").unwrap();
     let raw_tokens: Vec<String> = code
         .split_code()
@@ -51,7 +51,7 @@ pub fn lexical_csv_output(code: &String, tokens: &Tokens) {
             }
         })
         .filter(|raw| {
-            raw != ""
+            !raw.is_empty()
                 && raw != "\n"
                 && raw != " "
                 && !raw.starts_with("//")

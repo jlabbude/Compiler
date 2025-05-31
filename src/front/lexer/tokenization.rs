@@ -93,7 +93,6 @@ impl Splitter for str {
 
     fn csv_formatter(&self) -> String {
         self.chars()
-            .into_iter()
             .collect::<String>()
             .replace("\"", "\"\"")
     }

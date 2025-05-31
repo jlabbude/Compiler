@@ -23,6 +23,9 @@ pub enum NonTerminal {
     Struct,
     Enum,
 
+    EnumBody,
+    StructBody,
+
     Func,
     FuncArgument,
     FuncBody,
@@ -33,6 +36,8 @@ pub enum NonTerminal {
     StmntAssign,
     StmntDecl,
     StmntReturn,
+    StmntElse,
+    StmntCase,
 
     Expr,
     ExprOperation,
@@ -43,11 +48,7 @@ pub enum NonTerminal {
     ExprFieldAccess,
     ExprOperand,
     ExprFuncCallArgs,
-    StmntElse,
-    StmntCase,
     ExprCall,
-    EnumBody,
-    StructBody,
 }
 
 pub enum Statement {
@@ -79,24 +80,23 @@ pub enum Terminal {
     Epsilon,
 }
 
-pub struct ParsingRule {
+#[derive(Clone)]
+pub struct ParsingRule<'a> {
     pub non_terminal: NonTerminal,
     pub token: Terminal,
-    pub production: Vec<Symbol>,
+    pub production: &'a [Symbol],
 }
-
-pub type Grammar = Vec<ParsingRule>;
 
 pub trait Parser {
-    fn parsing_table() -> Grammar;
+    const PARSING_TABLE: &'static [ParsingRule<'_>];
 }
 
-impl ParsingRule {
+impl ParsingRule<'_> {
     fn find_rule<'a>(
         table: &'a [ParsingRule],
         non_terminal: &NonTerminal,
         token: &Token,
-    ) -> Option<&'a ParsingRule> {
+    ) -> Option<&'a ParsingRule<'a>> {
         table.iter().find(|rule| {
             rule.non_terminal == *non_terminal && (ParsingRule::matches_token(&rule.token, token))
         })
@@ -174,16 +174,8 @@ impl ParsingRule {
         while let Some(top) = stack.pop() {
             match top {
                 Symbol::Terminal(expected) => {
-                    if let Token::Identifier(identifier) = tokens.get(pos).unwrap() {
-                        let len = (*raw_productions).len() - 1;
-                        raw_productions[len].1.iter_mut().for_each(|symbol| {
-                            if let Symbol::Terminal(Terminal::Token(Token::Identifier(_))) = symbol
-                            {
-                                *symbol = Symbol::Terminal(Terminal::Token(Token::Identifier(
-                                    identifier.clone(),
-                                )));
-                            }
-                        });
+                    if let Some(token) = tokens.get(pos) {
+                        update_production_with_token_value(token, &mut raw_productions);
                     }
                     if ParsingRule::matches_token(
                         &expected.clone(),
@@ -213,7 +205,6 @@ impl ParsingRule {
                             None => continue,
                         },
                     ) {
-                        let local_tokens = rule.production.clone();
                         rule.production
                             .iter()
                             .rev()
@@ -221,7 +212,7 @@ impl ParsingRule {
                             .for_each(|symbol| {
                                 stack.push(symbol.clone());
                             });
-                        raw_productions.push((nt, local_tokens));
+                        raw_productions.push((nt, rule.production.to_vec()));
                     } else {
                         return Err(SyntaxError::NoRule(format!(
                             "No rule for NonTerminal {:?} with token {:?} at position {pos}",
@@ -304,4 +295,47 @@ fn join_rules(raw_productions: Vec<(NonTerminal, Vec<Symbol>)>) -> Vec<(NonTermi
             )
         })
         .collect()
+}
+
+fn update_production_with_token_value(
+    token: &Token,
+    raw_productions: &mut Vec<(NonTerminal, Vec<Symbol>)>,
+) {
+    // Only proceed if we have productions
+    if let Some(last_production) = raw_productions.last_mut() {
+        match token {
+            Token::Identifier(identifier) => {
+                update_symbols_in_production(
+                    &mut last_production.1,
+                    |symbol| {
+                        matches!(
+                            symbol,
+                            Symbol::Terminal(Terminal::Token(Token::Identifier(_)))
+                        )
+                    },
+                    |_| Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone()))),
+                );
+            }
+            Token::Literal(lit) => {
+                update_symbols_in_production(
+                    &mut last_production.1,
+                    |symbol| matches!(symbol, Symbol::Terminal(Terminal::Token(Token::Literal(_)))),
+                    |_| Symbol::Terminal(Terminal::Token(Token::Literal(lit.clone()))),
+                );
+            }
+            _ => {}
+        }
+    }
+}
+
+fn update_symbols_in_production<F, G>(symbols: &mut Vec<Symbol>, predicate: F, transformer: G)
+where
+    F: Fn(&Symbol) -> bool,
+    G: Fn(&Symbol) -> Symbol,
+{
+    for symbol in symbols.iter_mut() {
+        if predicate(symbol) {
+            *symbol = transformer(symbol);
+        }
+    }
 }
