@@ -1,6 +1,6 @@
-use crate::lexer::reserved::{ReservedWord, Separator};
-use crate::lexer::tokens::Token;
-use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
+use crate::front::lexer::reserved::{ReservedWord, Separator};
+use crate::front::lexer::tokens::Token;
+use crate::front::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 pub struct Program;
 

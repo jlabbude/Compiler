@@ -1,24 +1,24 @@
-use crate::lexer::reserved::{ReservedWord, Separator};
-use crate::lexer::tokens::Token;
-use crate::parser::grammar::id;
-use crate::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
+use crate::front::lexer::reserved::{ReservedWord, Separator};
+use crate::front::lexer::tokens::Token;
+use crate::front::parser::grammar::id;
+use crate::front::parser::grammar::{Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
-pub struct Enumeration;
+pub struct Struct;
 
-impl Parser for Enumeration {
-    /// <Enum> :: enum <Identifier> { <EnumBody> }
+impl Parser for Struct {
+    /// <Struct> :: struct <Identifier> { <StructBody> }
     fn parsing_table() -> Grammar {
         vec![
             ParsingRule {
-                non_terminal: NonTerminal::Enum,
-                token: Terminal::Token(Token::ReservedWord(ReservedWord::Enum)),
+                non_terminal: NonTerminal::Struct,
+                token: Terminal::Token(Token::ReservedWord(ReservedWord::Struct)),
                 production: vec![
-                    Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Enum))),
+                    Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Struct))),
                     Symbol::Terminal(id),
                     Symbol::Terminal(Terminal::Token(Token::Separator(
                         Separator::OpenCurlyBraces,
                     ))),
-                    Symbol::NonTerminal(NonTerminal::EnumBody),
+                    Symbol::NonTerminal(NonTerminal::StructBody),
                     Symbol::Terminal(Terminal::Token(Token::Separator(
                         Separator::CloseCurlyBraces,
                     ))),
@@ -26,23 +26,24 @@ impl Parser for Enumeration {
                 ],
             },
             ParsingRule {
-                non_terminal: NonTerminal::EnumBody,
-                token: id,
+                non_terminal: NonTerminal::StructBody,
+                token: Terminal::DataType,
                 production: vec![
+                    Symbol::Terminal(Terminal::DataType),
                     Symbol::Terminal(id),
-                    Symbol::NonTerminal(NonTerminal::EnumBody),
+                    Symbol::NonTerminal(NonTerminal::StructBody),
                 ],
             },
             ParsingRule {
-                non_terminal: NonTerminal::EnumBody,
+                non_terminal: NonTerminal::StructBody,
                 token: Terminal::Token(Token::Separator(Separator::Comma)),
                 production: vec![
                     Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Comma))),
-                    Symbol::NonTerminal(NonTerminal::EnumBody),
+                    Symbol::NonTerminal(NonTerminal::StructBody),
                 ],
             },
             ParsingRule {
-                non_terminal: NonTerminal::EnumBody,
+                non_terminal: NonTerminal::StructBody,
                 token: Terminal::Token(Token::Separator(Separator::CloseCurlyBraces)),
                 production: vec![Symbol::Terminal(Terminal::Epsilon)],
             },

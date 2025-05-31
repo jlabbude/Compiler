@@ -1,5 +1,5 @@
-use crate::lexer::reserved::{Operator, Separator};
-use crate::lexer::tokens::Token;
+use crate::front::lexer::reserved::{Operator, Separator};
+use crate::front::lexer::tokens::Token;
 use crate::Tokens;
 use regex::bytes::Regex;
 use std::collections::HashMap;

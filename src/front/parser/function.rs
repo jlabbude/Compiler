@@ -1,6 +1,6 @@
-use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokens::Token;
-use crate::parser::grammar::{
+use crate::front::lexer::reserved::{Operator, ReservedWord, Separator};
+use crate::front::lexer::tokens::Token;
+use crate::front::parser::grammar::{
     id, literal, Grammar, NonTerminal, Parser, ParsingRule, Symbol, Terminal,
 };
 

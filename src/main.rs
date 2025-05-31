@@ -1,20 +1,18 @@
 #![allow(dead_code)]
 extern crate core;
 
-use crate::lexer::tokenization::{tokenize, Splitter};
-use crate::lexer::tokens::Token;
-use crate::parser::enumeration::Enumeration;
-use crate::parser::function::Function;
-use crate::parser::grammar::{Grammar, Parser, ParsingRule};
-use crate::parser::program::Program;
-use crate::parser::structure::Struct;
-use lexer::reserved::Separator;
-use std::io::Write;
+use front::lexer::tokenization::{tokenize, Splitter};
+use front::lexer::tokens::Token;
+use front::parser::enumeration::Enumeration;
+use front::parser::function::Function;
+use front::parser::grammar::{Grammar, Parser, ParsingRule};
+use front::parser::program::Program;
+use front::parser::structure::Struct;
+use front::lexer::reserved::Separator;
 use std::path::Path;
 
-mod lexer;
-mod parser;
 mod csv_output;
+mod front;
 
 pub type Tokens = Vec<Token>;
 

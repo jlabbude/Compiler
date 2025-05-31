@@ -25,4 +25,4 @@ func int main() {
 ## Roadmap
 - [X] Lexical analysis
 - [X] Syntax analysis
-- [ ] <s> Semantic analysis </s> **(POSTPONED)** 
+- [ ] Semantic analysis

@@ -1,5 +1,5 @@
-use crate::lexer::reserved::{Operator, ReservedWord, Separator};
-use crate::lexer::tokenization::{
+use crate::front::lexer::reserved::{Operator, ReservedWord, Separator};
+use crate::front::lexer::tokenization::{
     tokenize_comment, tokenize_comment_block, tokenize_identifier, LexicalError, RawToken, Splitter,
 };
 use std::fmt;

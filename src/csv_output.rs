@@ -1,8 +1,8 @@
 use std::fs::File;
 use std::io::Write;
-use crate::lexer::tokenization::Splitter;
-use crate::lexer::tokens::Token;
-use crate::parser::grammar::{NonTerminal, Symbol};
+use crate::front::lexer::tokenization::Splitter;
+use crate::front::lexer::tokens::Token;
+use crate::front::parser::grammar::{NonTerminal, Symbol};
 use crate::Tokens;
 
 pub fn ast_csv_output(table_output: Vec<(NonTerminal, Vec<Symbol>)>) {
