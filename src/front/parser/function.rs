@@ -1,8 +1,6 @@
 use crate::front::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::front::lexer::tokens::Token;
-use crate::front::parser::grammar::{
-    id, literal, NonTerminal, Parser, ParsingRule, Symbol, Terminal,
-};
+use crate::front::parser::grammar::{id, literal, typed, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 // todo arraydecl
 
@@ -47,7 +45,7 @@ impl Parser for Function {
             token: Terminal::Token(Token::ReservedWord(ReservedWord::Function)),
             production: &[
                 Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Function))),
-                Symbol::Terminal(Terminal::DataType),
+                Symbol::Terminal(typed),
                 Symbol::Terminal(id),
                 Symbol::Terminal(Terminal::Token(Token::Separator(
                     Separator::OpenParenthesis,
@@ -73,9 +71,9 @@ impl Parser for Function {
         */
         ParsingRule {
             non_terminal: NonTerminal::FuncArgument,
-            token: Terminal::DataType,
+            token: typed,
             production: &[
-                Symbol::Terminal(Terminal::DataType),
+                Symbol::Terminal(typed),
                 Symbol::Terminal(id),
                 Symbol::NonTerminal(NonTerminal::FuncArgument),
             ],
@@ -85,7 +83,7 @@ impl Parser for Function {
             token: Terminal::Token(Token::Separator(Separator::Comma)),
             production: &[
                 Symbol::Terminal(Terminal::Token(Token::Separator(Separator::Comma))),
-                Symbol::Terminal(Terminal::DataType),
+                Symbol::Terminal(typed),
                 Symbol::Terminal(id),
                 Symbol::NonTerminal(NonTerminal::FuncArgument),
             ],
@@ -569,7 +567,7 @@ impl Parser for Function {
             token: Terminal::Token(Token::ReservedWord(ReservedWord::Let)),
             production: &[
                 Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Let))),
-                Symbol::Terminal(Terminal::DataType),
+                Symbol::Terminal(typed),
                 Symbol::Terminal(id),
                 Symbol::Terminal(Terminal::Token(Token::Operator(Operator::Assignment))),
                 Symbol::NonTerminal(NonTerminal::Expr),
@@ -580,7 +578,7 @@ impl Parser for Function {
             token: Terminal::Token(Token::ReservedWord(ReservedWord::Constant)),
             production: &[
                 Symbol::Terminal(Terminal::Token(Token::ReservedWord(ReservedWord::Constant))),
-                Symbol::Terminal(Terminal::DataType),
+                Symbol::Terminal(typed),
                 Symbol::Terminal(id),
                 Symbol::Terminal(Terminal::Token(Token::Operator(Operator::Assignment))),
                 Symbol::NonTerminal(NonTerminal::Expr),

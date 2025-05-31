@@ -1,6 +1,6 @@
 use crate::front::lexer::reserved::{ReservedWord, Separator};
 use crate::front::lexer::tokens::Token;
-use crate::front::parser::grammar::id;
+use crate::front::parser::grammar::{id, typed};
 use crate::front::parser::grammar::{NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 pub struct Struct;
@@ -26,9 +26,9 @@ impl Parser for Struct {
         },
         ParsingRule {
             non_terminal: NonTerminal::StructBody,
-            token: Terminal::DataType,
+            token: typed,
             production: &[
-                Symbol::Terminal(Terminal::DataType),
+                Symbol::Terminal(typed),
                 Symbol::Terminal(id),
                 Symbol::NonTerminal(NonTerminal::StructBody),
             ],

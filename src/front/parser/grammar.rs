@@ -7,6 +7,11 @@ use strum_macros::Display;
 pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
 pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 
+pub const typed: Terminal = Terminal::DataType(DataType::Int);
+
+#[allow(clippy::upper_case_acronyms)]
+pub type AST = Vec<(NonTerminal, Vec<Symbol>)>;
+
 #[derive(Display)]
 pub enum SyntaxError {
     #[strum(serialize = "Syntax error: {0}")]
@@ -73,7 +78,7 @@ pub enum Symbol {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Terminal {
     Token(Token),
-    DataType,
+    DataType(DataType),
     UnaryOperator,
     ReassignOp,
     Any,
@@ -85,6 +90,34 @@ pub struct ParsingRule<'a> {
     pub non_terminal: NonTerminal,
     pub token: Terminal,
     pub production: &'a [Symbol],
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum DataType {
+    Int,
+    Float,
+    Void,
+    Double,
+    Str,
+    Char,
+    Bool,
+    Identifier(String),
+}
+
+impl TryFrom<ReservedWord> for DataType {
+    type Error = ();
+    fn try_from(value: ReservedWord) -> Result<Self, Self::Error> {
+        match value {
+            ReservedWord::Int => Ok(DataType::Int),
+            ReservedWord::Float => Ok(DataType::Float),
+            ReservedWord::Void => Ok(DataType::Void),
+            ReservedWord::Double => Ok(DataType::Double),
+            ReservedWord::Str => Ok(DataType::Str),
+            ReservedWord::Char => Ok(DataType::Char),
+            ReservedWord::Bool => Ok(DataType::Bool),
+            _ => Err(()),
+        }
+    }
 }
 
 pub trait Parser {
@@ -125,7 +158,7 @@ impl ParsingRule<'_> {
                 (Token::Operator(expected), Token::Operator(actual)) => expected == actual,
                 _ => false,
             },
-            Terminal::DataType => ParsingRule::is_data_type(actual),
+            Terminal::DataType(_) => ParsingRule::is_data_type(actual),
             Terminal::UnaryOperator => {
                 if let Token::Operator(op) = actual {
                     matches!(
@@ -166,7 +199,7 @@ impl ParsingRule<'_> {
     pub(crate) fn parse_with_table(
         tokens: &[Token],
         table: &[ParsingRule],
-    ) -> Result<Vec<(NonTerminal, Vec<Symbol>)>, SyntaxError> {
+    ) -> Result<AST, SyntaxError> {
         let mut stack = vec![Symbol::NonTerminal(NonTerminal::Program)];
         let mut pos = 0;
         let mut raw_productions: Vec<(NonTerminal, Vec<Symbol>)> = Vec::new();
@@ -299,7 +332,7 @@ fn join_rules(raw_productions: Vec<(NonTerminal, Vec<Symbol>)>) -> Vec<(NonTermi
 
 fn update_production_with_token_value(
     token: &Token,
-    raw_productions: &mut Vec<(NonTerminal, Vec<Symbol>)>,
+    raw_productions: &mut [(NonTerminal, Vec<Symbol>)],
 ) {
     // Only proceed if we have productions
     if let Some(last_production) = raw_productions.last_mut() {
@@ -323,12 +356,23 @@ fn update_production_with_token_value(
                     |_| Symbol::Terminal(Terminal::Token(Token::Literal(lit.clone()))),
                 );
             }
+            Token::ReservedWord(word)
+                if ParsingRule::is_data_type(&Token::ReservedWord(word.clone())) =>
+            {
+                // Convert ReservedWord to DataType using the TryFrom implementation
+                if let Ok(data_type) = DataType::try_from(word.clone()) {
+                    update_symbols_in_production(
+                        &mut last_production.1,
+                        |symbol| matches!(symbol, Symbol::Terminal(Terminal::DataType(_))),
+                        |_| Symbol::Terminal(Terminal::DataType(data_type.clone())),
+                    );
+                }
+            }
             _ => {}
         }
     }
 }
-
-fn update_symbols_in_production<F, G>(symbols: &mut Vec<Symbol>, predicate: F, transformer: G)
+fn update_symbols_in_production<F, G>(symbols: &mut [Symbol], predicate: F, transformer: G)
 where
     F: Fn(&Symbol) -> bool,
     G: Fn(&Symbol) -> Symbol,

@@ -1,9 +1,9 @@
-use std::fs::File;
-use std::io::Write;
 use crate::front::lexer::tokenization::Splitter;
 use crate::front::lexer::tokens::Token;
 use crate::front::parser::grammar::{NonTerminal, Symbol};
 use crate::Tokens;
+use std::fs::File;
+use std::io::Write;
 
 pub fn ast_csv_output(table_output: Vec<(NonTerminal, Vec<Symbol>)>) {
     let mut syntax_output = File::create("output/syntax_output.csv").unwrap();

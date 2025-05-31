@@ -38,6 +38,7 @@ fn main() {
             let code = &std::fs::read_to_string(source_file)
                 .unwrap()
                 .replace("\r\n", "\n");
+
             let tokens = tokenize(code)
                 .into_iter()
                 .filter(|token| {
@@ -49,7 +50,8 @@ fn main() {
                     )
                 })
                 .collect::<Tokens>();
-            match ParsingRule::parse_with_table(
+
+            let ast = ParsingRule::parse_with_table(
                 &tokens,
                 &[
                     Program::PARSING_TABLE,
@@ -58,7 +60,9 @@ fn main() {
                     Struct::PARSING_TABLE,
                 ] //fixme datatype check sytnh
                 .concat(),
-            ) {
+            );
+
+            match ast {
                 Ok(table_output) => {
                     csv_output::lexical_csv_output(code, &tokens);
                     csv_output::ast_csv_output(table_output);
