@@ -1,40 +1,43 @@
 use crate::front::lexer::tokenization::Splitter;
 use crate::front::lexer::tokens::Token;
-use crate::front::parser::grammar::{NonTerminal, Symbol};
+use crate::front::parser::grammar::{Symbol, AST};
 use crate::Tokens;
 use std::fs::File;
 use std::io::Write;
 
-pub fn ast_csv_output(table_output: Vec<(NonTerminal, Vec<Symbol>)>) {
+pub fn ast_csv_output(table_output: &AST) {
     let mut syntax_output = File::create("output/syntax_output.csv").unwrap();
     syntax_output
         .write_all("\"<Rule>\",\"Production\"\n".as_bytes())
         .unwrap();
-    table_output.into_iter().for_each(|(nt, production)| {
-        syntax_output
-            .write_all(
-                format!(
-                    "\"<{:?}>\",\"{production}\"\n",
-                    nt,
-                    production = {
-                        production
-                            .iter()
-                            .map(|symbol| match symbol {
-                                Symbol::Terminal(terminal) => format!("{terminal:?} ")
-                                    .as_str()
-                                    .csv_formatter()
-                                    .replace("Epsilon", "\u{03b5}"),
-                                Symbol::NonTerminal(non_terminal) => {
-                                    format!("<{non_terminal:?}> ").as_str().csv_formatter()
-                                }
-                            })
-                            .collect::<String>()
-                    }
+    table_output
+        .as_vec()
+        .into_iter()
+        .for_each(|(nt, production)| {
+            syntax_output
+                .write_all(
+                    format!(
+                        "\"<{:?}>\",\"{production}\"\n",
+                        nt,
+                        production = {
+                            production
+                                .iter()
+                                .map(|symbol| match symbol {
+                                    Symbol::Terminal(terminal) => format!("{terminal:?} ")
+                                        .as_str()
+                                        .csv_formatter()
+                                        .replace("Epsilon", "\u{03b5}"),
+                                    Symbol::NonTerminal(non_terminal) => {
+                                        format!("<{non_terminal:?}> ").as_str().csv_formatter()
+                                    }
+                                })
+                                .collect::<String>()
+                        }
+                    )
+                    .as_bytes(),
                 )
-                .as_bytes(),
-            )
-            .unwrap();
-    });
+                .unwrap();
+        });
 }
 
 pub fn lexical_csv_output(code: &str, tokens: &Tokens) {

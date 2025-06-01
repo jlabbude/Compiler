@@ -10,7 +10,7 @@ pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
 pub const typed: Terminal = Terminal::DataType(DataType::Int);
 
 #[allow(clippy::upper_case_acronyms)]
-pub type AST = Vec<(NonTerminal, Vec<Symbol>)>;
+pub struct AST(pub(crate) Vec<(NonTerminal, Vec<Symbol>)>);
 
 #[derive(Display)]
 pub enum SyntaxError {
@@ -259,7 +259,7 @@ impl ParsingRule<'_> {
         }
 
         if pos <= tokens.len() {
-            Ok(raw_productions)
+            Ok(AST(raw_productions))
         } else {
             Err(SyntaxError::UnconsumedInput(format!(
                 "Unconsumed input at position {}",
