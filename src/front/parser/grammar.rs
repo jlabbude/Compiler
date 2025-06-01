@@ -209,7 +209,7 @@ impl ParsingRule<'_> {
             match top {
                 Symbol::Terminal(expected) => {
                     if let Some(token) = tokens.get(pos) {
-                        update_production_with_token_value(token, &mut raw_productions);
+                        update_production_with_token_value(token, &expected, &mut raw_productions);
                     }
                     if ParsingRule::matches_token(
                         &expected.clone(),
@@ -301,7 +301,7 @@ fn join_rules(raw_productions: Vec<(NonTerminal, Vec<Symbol>)>) -> Vec<(NonTermi
 
     for (nt, production) in &raw_productions {
         let mut expanded = Vec::new();
-        let mut visited = Vec::new(); // Track visited nodes to prevent infinite recursion
+        let mut visited = Vec::new();
         for symbol in production {
             match symbol {
                 Symbol::NonTerminal(inner_nt) => {
@@ -333,21 +333,39 @@ fn join_rules(raw_productions: Vec<(NonTerminal, Vec<Symbol>)>) -> Vec<(NonTermi
 
 fn update_production_with_token_value(
     token: &Token,
+    expected: &Terminal,
     raw_productions: &mut [(NonTerminal, Vec<Symbol>)],
 ) {
     if let Some(last_production) = raw_productions.last_mut() {
         match token {
             Token::Identifier(identifier) => {
-                update_symbols_in_production(
-                    &mut last_production.1,
-                    |symbol| {
-                        matches!(
+                if let Terminal::DataType(_) = expected {
+                    update_symbols_in_production(
+                        &mut last_production.1,
+                        |symbol| {
+                            matches!(
+                                symbol,
+                                Symbol::Terminal(Terminal::DataType(_))
+                            )
+                        },
+                        |_| {
+                            Symbol::Terminal(Terminal::DataType(DataType::Identifier(
+                                identifier.clone(),
+                            )))
+                        },
+                    );
+                } else {
+                    update_symbols_in_production(
+                        &mut last_production.1,
+                        |symbol| {
+                            matches!(
                             symbol,
                             Symbol::Terminal(Terminal::Token(Token::Identifier(_)))
                         )
-                    },
-                    |_| Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone()))),
-                );
+                        },
+                        |_| Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone()))),
+                    );
+                }
             }
             Token::Literal(lit) => {
                 update_symbols_in_production(

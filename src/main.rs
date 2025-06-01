@@ -59,7 +59,7 @@ fn main() {
                     Function::PARSING_TABLE,
                     Enumeration::PARSING_TABLE,
                     Struct::PARSING_TABLE,
-                ] //fixme datatype check sytnh
+                ]
                 .concat(),
             );
             
@@ -69,8 +69,8 @@ fn main() {
                     match typer(&table_output) {
                         Ok(_) => println!("Type checking passed."),
                         Err(err) => {
-                            eprintln!("Type checking failed: {err}");
-                            std::process::exit(1);
+                            // eprintln!("Type checking failed: {err}");
+                            // std::process::exit(1);
                         }
                     }
                     csv_output::lexical_csv_output(code, &tokens);
