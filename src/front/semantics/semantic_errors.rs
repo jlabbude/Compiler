@@ -13,6 +13,8 @@ pub enum SemanticError {
     // MissingReturnValue,
     // DuplicateVariable,
     // UnusedVariable,
+    MissingIdentifier,
+    MissingDataType,
 }
 
 impl Error for SemanticError {

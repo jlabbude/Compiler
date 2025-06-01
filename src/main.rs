@@ -10,6 +10,7 @@ use front::parser::grammar::{Parser, ParsingRule};
 use front::parser::program::Program;
 use front::parser::structure::Struct;
 use std::path::Path;
+use front::semantics::types::typer;
 
 mod csv_output;
 mod front;
@@ -61,9 +62,17 @@ fn main() {
                 ] //fixme datatype check sytnh
                 .concat(),
             );
+            
 
             match ast {
                 Ok(table_output) => {
+                    match typer(&table_output) {
+                        Ok(_) => println!("Type checking passed."),
+                        Err(err) => {
+                            eprintln!("Type checking failed: {err}");
+                            std::process::exit(1);
+                        }
+                    }
                     csv_output::lexical_csv_output(code, &tokens);
                     csv_output::ast_csv_output(table_output);
                 }

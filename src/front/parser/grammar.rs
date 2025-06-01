@@ -145,6 +145,7 @@ impl ParsingRule<'_> {
                 | Token::ReservedWord(ReservedWord::Str)
                 | Token::ReservedWord(ReservedWord::Char)
                 | Token::ReservedWord(ReservedWord::Bool)
+                | Token::Identifier(_)
         )
     }
 
@@ -334,7 +335,6 @@ fn update_production_with_token_value(
     token: &Token,
     raw_productions: &mut [(NonTerminal, Vec<Symbol>)],
 ) {
-    // Only proceed if we have productions
     if let Some(last_production) = raw_productions.last_mut() {
         match token {
             Token::Identifier(identifier) => {
@@ -359,7 +359,6 @@ fn update_production_with_token_value(
             Token::ReservedWord(word)
                 if ParsingRule::is_data_type(&Token::ReservedWord(word.clone())) =>
             {
-                // Convert ReservedWord to DataType using the TryFrom implementation
                 if let Ok(data_type) = DataType::try_from(word.clone()) {
                     update_symbols_in_production(
                         &mut last_production.1,

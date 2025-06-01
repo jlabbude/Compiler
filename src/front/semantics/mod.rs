@@ -1,2 +1,2 @@
-mod types;
-mod semantic_errors;
+pub mod types;
+pub mod semantic_errors;
