@@ -31,6 +31,8 @@
 "Identifier(""enumeracao"")","enumeracao"
 "Operator(Assignment)","="
 "Literal(Int(1))","1"
+"Operator(Sum)","+"
+"Identifier(""a"")","a"
 "Separator(Terminator)",";"
 "ReservedWord(Let)","let"
 "ReservedWord(Str)","string"

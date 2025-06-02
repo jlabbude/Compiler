@@ -9,7 +9,7 @@ enumeration Enum {
 }
 
 func int test(int var, float va2) {
-    let Enum enumeracao = 1;
+    let Enum enumeracao = 1 + 1;
     let string var3 = "teste";
     let character var4 = compare('1', '2');
     let float var5 = 2.0;
