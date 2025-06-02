@@ -19,7 +19,7 @@
 "<FuncBody>","<StmntList> "
 "<StmntList>","<Statement> <StmntList> "
 "<Statement>","<StmntDecl> Token(Separator(Terminator)) "
-"<StmntDecl>","Token(ReservedWord(Let)) DataType(Identifier(""Pedoro"")) Token(Identifier(""pedoro"")) Token(Operator(Assignment)) <Expr> "
+"<StmntDecl>","Token(ReservedWord(Let)) DataType(Identifier(""Enum"")) Token(Identifier(""enumeracao"")) Token(Operator(Assignment)) <Expr> "
 "<Expr>","<ExprOperand> <ExprOperation> "
 "<ExprOperand>","Token(Literal(Int(1))) "
 "<ExprOperation>","ε "

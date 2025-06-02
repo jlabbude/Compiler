@@ -70,7 +70,7 @@ fn main() {
                     match table_output.type_check() {
                         Ok(_) => println!("Type checking passed."),
                         Err(err) => {
-                            eprintln!("Type checking failed: {err}");
+                            eprintln!("{err}");
                             std::process::exit(1);
                         }
                     }

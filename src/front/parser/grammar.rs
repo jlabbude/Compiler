@@ -92,7 +92,7 @@ pub struct ParsingRule<'a> {
     pub production: &'a [Symbol],
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Display)]
 pub enum DataType {
     Int,
     Float,

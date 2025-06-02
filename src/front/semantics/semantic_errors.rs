@@ -15,7 +15,8 @@ pub enum SemanticError {
     // UnusedVariable,
     MissingIdentifier,
     MissingDataType,
-    UndeclaredType(crate::front::parser::grammar::DataType),
+    #[strum(serialize = "undeclared type {0}")]
+    UndeclaredType(String),
 }
 
 impl Error for SemanticError {
