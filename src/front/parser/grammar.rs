@@ -269,68 +269,6 @@ impl ParsingRule<'_> {
     }
 }
 
-#[deprecated]
-fn join_rules(raw_productions: Vec<(NonTerminal, Vec<Symbol>)>) -> Vec<(NonTerminal, Vec<Symbol>)> {
-    fn expand_non_terminal(
-        nt: &NonTerminal,
-        productions: &[(NonTerminal, Vec<Symbol>)],
-        visited: &mut Vec<NonTerminal>,
-    ) -> Vec<Symbol> {
-        if visited.contains(nt) {
-            return vec![Symbol::NonTerminal(nt.clone())];
-        }
-        visited.push(nt.clone());
-        if let Some((_, production)) = productions.iter().find(|(lhs, _)| lhs == nt) {
-            let mut expanded = Vec::new();
-            for symbol in production {
-                match symbol {
-                    Symbol::NonTerminal(inner_nt) => {
-                        expanded.extend(expand_non_terminal(inner_nt, productions, visited));
-                    }
-                    other => expanded.push(other.clone()),
-                }
-            }
-            visited.pop();
-            expanded
-        } else {
-            panic!("Unmatched NonTerminal: {:?}", nt);
-        }
-    }
-
-    let mut final_productions = Vec::new();
-
-    for (nt, production) in &raw_productions {
-        let mut expanded = Vec::new();
-        let mut visited = Vec::new();
-        for symbol in production {
-            match symbol {
-                Symbol::NonTerminal(inner_nt) => {
-                    expanded.extend(expand_non_terminal(
-                        inner_nt,
-                        &raw_productions,
-                        &mut visited,
-                    ));
-                }
-                other => expanded.push(other.clone()),
-            }
-        }
-        final_productions.push((nt.clone(), expanded));
-    }
-
-    final_productions
-        .iter()
-        .map(|(nt, production)| {
-            (
-                nt.clone(),
-                vec![Symbol::NonTerminal(nt.clone())]
-                    .into_iter()
-                    .chain(production.clone())
-                    .collect(),
-            )
-        })
-        .collect()
-}
-
 fn update_production_with_token_value(
     token: &Token,
     expected: &Terminal,
