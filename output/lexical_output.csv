@@ -32,7 +32,7 @@
 "Operator(Assignment)","="
 "Literal(Int(1))","1"
 "Operator(Sum)","+"
-"Identifier(""a"")","a"
+"Literal(Int(1))","1"
 "Separator(Terminator)",";"
 "ReservedWord(Let)","let"
 "ReservedWord(Str)","string"

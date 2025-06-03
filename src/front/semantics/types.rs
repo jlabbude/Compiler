@@ -35,6 +35,7 @@ impl AST {
     pub fn type_check(self) -> Result<(), SemanticError> {
         let table = self.build_type_table()?;
         let identifiers_as_types = self.get_valid_identifiers_as_types()?;
+        identifiers_as_types.iter().for_each(|identifier| println!("{:?}", identifier));
         self.validate_identifiers_as_types_usage(table, identifiers_as_types)?;
         Ok(())
     }
@@ -123,10 +124,10 @@ impl AST {
                             nt == &NonTerminal::StructBody && Self::not_epsilon(prod)
                         })
                         .filter_map(|(_, prod)| {
-                            let mut prod = prod.iter();
-                            match prod.next()? {
+                            let mut prod_iter = prod.iter();
+                            match prod_iter.next()? {
                                 Symbol::Terminal(Terminal::DataType(dt)) => Some(TypeCell {
-                                    identifier: identifier.clone(),
+                                    identifier: Self::get_identifier_in_production(prod).unwrap(),
                                     data_type: dt.clone(),
                                 }),
                                 _ => None,
