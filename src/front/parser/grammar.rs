@@ -34,26 +34,22 @@ pub enum NonTerminal {
     Func,
     FuncArgument,
     FuncBody,
-    FuncTail,
 
     Statement,
     StmntList,
     StmntAssign,
     StmntDecl,
-    StmntReturn,
     StmntElse,
     StmntCase,
 
     Expr,
+    ExprOperand,
     ExprOperation,
-    ExprLiteral,
-    ExprIdentifier,
+    ExprCall,
     ExprFuncCall,
     ExprArrayAccess,
     ExprFieldAccess,
-    ExprOperand,
     ExprFuncCallArgs,
-    ExprCall,
 }
 
 pub enum Statement {

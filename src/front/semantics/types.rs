@@ -76,17 +76,6 @@ impl AST {
                         None => continue,
                     };
 
-                    ast_vec
-                        .by_ref()
-                        .take_while(|(nt, prod)| Self::not_epsilon(prod))
-                        .for_each(|(nt, prod)| {
-                            match nt {
-                                NonTerminal::ExprOperand => {
-
-                                }
-                                _ => return,
-                            }
-                        });
                     table.push(TypeCell {
                         identifier: var_name,
                         data_type,
@@ -100,81 +89,109 @@ impl AST {
     }
 
     fn get_valid_identifiers_as_types(&self) -> Result<IdentifierTypeTable, SemanticError> {
-            let mut ast_vec = self.as_vec().iter();
-            let mut valid_types: Vec<IdentifierTypeCell> = Vec::new();
-            while let Some((non_terminal, production)) = ast_vec.next() {
-                match non_terminal {
-                    NonTerminal::Enum => {
-                        let variants: Vec<String> = ast_vec
-                            .by_ref()
-                            .take_while(|(nt, prod)| {
-                                nt == &NonTerminal::EnumBody && Self::not_epsilon(prod)
-                            })
-                            .filter_map(|(_, prod)| match prod.first()? {
-                                Symbol::Terminal(Terminal::Token(Token::Separator(
-                                                                     Separator::Comma,
-                                                                 ))) => None,
-                                Symbol::Terminal(Terminal::Token(Token::Identifier(variant))) => {
-                                    Some(variant.clone())
-                                }
-                                _ => panic!("Unexpected symbol in enum body: {:?}", prod.first()),
-                            })
-                            .collect();
-                        valid_types.push(IdentifierTypeCell::EnumType {
-                            identifier: Self::get_identifier_in_production(production).unwrap(),
-                            variants,
-                        });
-                    }
-                    NonTerminal::Struct => {
-                        // No id in prod returns syntax error, thus, unwrapping makes more sense.
-                        let identifier = Self::get_identifier_in_production(production).unwrap();
-                        let fields: TypeTable = ast_vec
-                            .by_ref()
-                            .take_while(|(nt, prod)| {
-                                nt == &NonTerminal::StructBody && Self::not_epsilon(prod)
-                            })
-                            .filter_map(|(_, prod)| {
-                                let mut prod = prod.iter();
-                                match prod.next()? {
-                                    Symbol::Terminal(Terminal::DataType(dt)) => Some(TypeCell {
-                                        identifier: identifier.clone(),
-                                        data_type: dt.clone(),
-                                    }),
-                                    _ => None,
-                                }
-                            })
-                            .collect();
-                        valid_types.push(IdentifierTypeCell::StructType { identifier, fields })
-                    }
-                    _ => {}
-                }
-            }
-            Ok(valid_types)
-        }
-
-        fn validate_identifiers_as_types_usage(
-            &self,
-            type_table: TypeTable,
-            valid_id_types: IdentifierTypeTable,
-        ) -> Result<(), SemanticError> {
-            type_table
-                .iter()
-                .filter_map(|cell| match &cell.data_type {
-                    DataType::Identifier(identifier) => Some(identifier),
-                    _ => None,
-                })
-                .find(|&identifier| {
-                    !valid_id_types
-                        .iter()
-                        .map(|valid_t| match valid_t {
-                            IdentifierTypeCell::StructType { identifier, .. }
-                            | IdentifierTypeCell::EnumType { identifier, .. } => identifier,
+        let mut ast_vec = self.as_vec().iter();
+        let mut valid_types: Vec<IdentifierTypeCell> = Vec::new();
+        while let Some((non_terminal, production)) = ast_vec.next() {
+            match non_terminal {
+                NonTerminal::Enum => {
+                    let variants: Vec<String> = ast_vec
+                        .by_ref()
+                        .take_while(|(nt, prod)| {
+                            nt == &NonTerminal::EnumBody && Self::not_epsilon(prod)
                         })
-                        .collect::<Vec<&String>>()
-                        .contains(&identifier)
-                })
-                .map_or(Ok(()), |invalid_id| {
-                    Err(SemanticError::UndeclaredType(invalid_id.clone()))
-                })
+                        .filter_map(|(_, prod)| match prod.first()? {
+                            Symbol::Terminal(Terminal::Token(Token::Separator(
+                                Separator::Comma,
+                            ))) => None,
+                            Symbol::Terminal(Terminal::Token(Token::Identifier(variant))) => {
+                                Some(variant.clone())
+                            }
+                            _ => panic!("Unexpected symbol in enum body: {:?}", prod.first()),
+                        })
+                        .collect();
+                    valid_types.push(IdentifierTypeCell::EnumType {
+                        identifier: Self::get_identifier_in_production(production).unwrap(),
+                        variants,
+                    });
+                }
+                NonTerminal::Struct => {
+                    // No id in prod returns syntax error, thus, unwrapping makes more sense.
+                    let identifier = Self::get_identifier_in_production(production).unwrap();
+                    let fields: TypeTable = ast_vec
+                        .by_ref()
+                        .take_while(|(nt, prod)| {
+                            nt == &NonTerminal::StructBody && Self::not_epsilon(prod)
+                        })
+                        .filter_map(|(_, prod)| {
+                            let mut prod = prod.iter();
+                            match prod.next()? {
+                                Symbol::Terminal(Terminal::DataType(dt)) => Some(TypeCell {
+                                    identifier: identifier.clone(),
+                                    data_type: dt.clone(),
+                                }),
+                                _ => None,
+                            }
+                        })
+                        .collect();
+                    valid_types.push(IdentifierTypeCell::StructType { identifier, fields })
+                }
+                _ => {}
+            }
         }
+        Ok(valid_types)
     }
+
+    fn validate_identifiers_as_types_usage(
+        &self,
+        type_table: TypeTable,
+        valid_id_types: IdentifierTypeTable,
+    ) -> Result<(), SemanticError> {
+        type_table
+            .iter()
+            .filter_map(|cell| match &cell.data_type {
+                DataType::Identifier(identifier) => Some(identifier),
+                _ => None,
+            })
+            .find(|&identifier| {
+                !valid_id_types
+                    .iter()
+                    .map(|valid_t| match valid_t {
+                        IdentifierTypeCell::StructType { identifier, .. }
+                        | IdentifierTypeCell::EnumType { identifier, .. } => identifier,
+                    })
+                    .collect::<Vec<&String>>()
+                    .contains(&identifier)
+            })
+            .map_or(Ok(()), |invalid_id| {
+                Err(SemanticError::UndeclaredType(invalid_id.clone()))
+            })
+    }
+
+    fn validate_declaration_expression(
+        &self,
+        type_table: &TypeTable,
+        valid_id_types: &IdentifierTypeTable,
+    ) -> Result<(), SemanticError> {
+        let mut ast_vec = self.as_vec().iter();
+        // let mut operands = Vec::new();
+        for (nt, prod) in ast_vec
+            .by_ref()
+            .take_while(|(_, prod)| Self::not_epsilon(prod))
+        {
+            match nt {
+                NonTerminal::ExprOperand => {
+                    for symbol in prod {
+                        if let Symbol::Terminal(Terminal::Token(Token::Identifier(id))) = symbol {
+                            if !type_table.iter().any(|cell| &cell.identifier == id) {
+                                return Err(SemanticError::UndeclaredIdentifier(id.clone()));
+                            }
+                        }
+                    }
+                    // operands.push();
+                }
+                _ => return Ok(()),
+            }
+        }
+        Ok(())
+    }
+}

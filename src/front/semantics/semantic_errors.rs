@@ -17,6 +17,7 @@ pub enum SemanticError {
     MissingDataType,
     #[strum(serialize = "undeclared type {0}")]
     UndeclaredType(String),
+    UndeclaredIdentifier(String),
 }
 
 impl Error for SemanticError {
