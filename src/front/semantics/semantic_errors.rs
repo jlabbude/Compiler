@@ -1,3 +1,4 @@
+use crate::front::semantics::types::{IdentifierTypeCell, TypeCell};
 use std::error::Error;
 use strum_macros::Display;
 
@@ -18,8 +19,13 @@ pub enum SemanticError {
     #[strum(serialize = "undeclared type {0}")]
     UndeclaredType(String),
     UndeclaredIdentifier(String),
+    IncompatibleTypes(TypeCell, TypeCell),
+    InvalidExpressionWithVariant(String, TypeCell),
+    InvalidStructUsage(IdentifierTypeCell, TypeCell),
+    UnexpectedSymbolInExpression(String),
+    InvalidEnumVariant(String, TypeCell),
+    RedeclaredIdentifier(String, String),
+    VariantNotDeclared(TypeCell, String, IdentifierTypeCell),
 }
 
-impl Error for SemanticError {
-    
-}
+impl Error for SemanticError {}

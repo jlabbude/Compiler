@@ -74,7 +74,7 @@ impl TryFrom<String> for Literal {
                 content: assignment
                     .chars()
                     .skip(1)
-                    .take(assignment.chars().count() - 2)
+                    .take(assignment.chars().count() - 2) // fixme attempt to subtract with overflow
                     .collect(),
                 close_quote: Separator::StringQuotation,
             }))

@@ -12,7 +12,7 @@ pub fn ast_csv_output(table_output: &AST) {
         .unwrap();
     table_output
         .as_vec()
-        .into_iter()
+        .iter()
         .for_each(|(nt, production)| {
             syntax_output
                 .write_all(

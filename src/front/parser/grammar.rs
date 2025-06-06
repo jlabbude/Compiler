@@ -91,9 +91,10 @@ pub struct ParsingRule<'a> {
 #[derive(Clone, Debug, PartialEq, Display)]
 pub enum DataType {
     Int,
+    Long,
     Float,
-    Void,
     Double,
+    Void,
     Str,
     Char,
     Bool,
@@ -105,6 +106,7 @@ impl TryFrom<ReservedWord> for DataType {
     fn try_from(value: ReservedWord) -> Result<Self, Self::Error> {
         match value {
             ReservedWord::Int => Ok(DataType::Int),
+            ReservedWord::Long => Ok(DataType::Long),
             ReservedWord::Float => Ok(DataType::Float),
             ReservedWord::Void => Ok(DataType::Void),
             ReservedWord::Double => Ok(DataType::Double),
@@ -112,6 +114,20 @@ impl TryFrom<ReservedWord> for DataType {
             ReservedWord::Char => Ok(DataType::Char),
             ReservedWord::Bool => Ok(DataType::Bool),
             _ => Err(()),
+        }
+    }
+}
+
+impl From<Literal> for DataType {
+    fn from(value: Literal) -> Self {
+        match value {
+            Literal::Int(_) => DataType::Int,
+            Literal::Long(_) => DataType::Long,
+            Literal::Float(_) => DataType::Float,
+            Literal::Double(_) => DataType::Double,
+            Literal::Str(_) => DataType::Str,
+            Literal::Char(_) => DataType::Char,
+            Literal::Bool(_) => DataType::Bool,
         }
     }
 }
@@ -276,12 +292,7 @@ fn update_production_with_token_value(
                 if let Terminal::DataType(_) = expected {
                     update_symbols_in_production(
                         &mut last_production.1,
-                        |symbol| {
-                            matches!(
-                                symbol,
-                                Symbol::Terminal(Terminal::DataType(_))
-                            )
-                        },
+                        |symbol| matches!(symbol, Symbol::Terminal(Terminal::DataType(_))),
                         |_| {
                             Symbol::Terminal(Terminal::DataType(DataType::Identifier(
                                 identifier.clone(),
@@ -293,11 +304,13 @@ fn update_production_with_token_value(
                         &mut last_production.1,
                         |symbol| {
                             matches!(
-                            symbol,
-                            Symbol::Terminal(Terminal::Token(Token::Identifier(_)))
-                        )
+                                symbol,
+                                Symbol::Terminal(Terminal::Token(Token::Identifier(_)))
+                            )
                         },
-                        |_| Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone()))),
+                        |_| {
+                            Symbol::Terminal(Terminal::Token(Token::Identifier(identifier.clone())))
+                        },
                     );
                 }
             }
