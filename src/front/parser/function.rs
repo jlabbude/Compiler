@@ -1,6 +1,6 @@
 use crate::front::lexer::reserved::{Operator, ReservedWord, Separator};
 use crate::front::lexer::tokens::Token;
-use crate::front::parser::grammar::{id, literal, typed, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
+use crate::front::parser::grammar::{id, literal, typed, unary_op, NonTerminal, Parser, ParsingRule, Symbol, Terminal};
 
 // todo arraydecl
 
@@ -476,9 +476,9 @@ impl Parser for Function {
         */
         ParsingRule {
             non_terminal: NonTerminal::ExprOperation,
-            token: Terminal::UnaryOperator,
+            token: unary_op,
             production: &[
-                Symbol::Terminal(Terminal::UnaryOperator),
+                Symbol::Terminal(unary_op),
                 Symbol::NonTerminal(NonTerminal::Expr),
                 Symbol::NonTerminal(NonTerminal::ExprOperation),
             ],

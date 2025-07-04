@@ -6,8 +6,19 @@ use strum_macros::Display;
 
 pub const id: Terminal = Terminal::Token(Token::Identifier(String::new()));
 pub const literal: Terminal = Terminal::Token(Token::Literal(Literal::Int(0)));
-
 pub const typed: Terminal = Terminal::DataType(DataType::Int);
+pub const unary_op: Terminal = Terminal::UnaryOperator(Operator::Increment);
+
+#[macro_export]
+macro_rules! rule {
+    ($nt:expr => $t:expr => [ $($sym:expr),* ]) => {
+        ParsingRule {
+            non_terminal: $nt,
+            token: $t,
+            production: &[ $( $sym ),* ],
+        }
+    };
+}
 
 #[allow(clippy::upper_case_acronyms)]
 pub struct AST(pub(crate) Vec<(NonTerminal, Vec<Symbol>)>);
@@ -75,7 +86,7 @@ pub enum Symbol {
 pub enum Terminal {
     Token(Token),
     DataType(DataType),
-    UnaryOperator,
+    UnaryOperator(Operator),
     ReassignOp,
     Any,
     Epsilon,
@@ -172,12 +183,11 @@ impl ParsingRule<'_> {
                 _ => false,
             },
             Terminal::DataType(_) => ParsingRule::is_data_type(actual),
-            Terminal::UnaryOperator => {
+            Terminal::UnaryOperator(_) => {
                 if let Token::Operator(op) = actual {
                     matches!(
                         op,
-                        Operator::Increment
-                            | Operator::GreaterThanOrEqual
+                        Operator::GreaterThanOrEqual
                             | Operator::LessThanOrEqual
                             | Operator::Sum
                             | Operator::Subtraction
@@ -209,6 +219,7 @@ impl ParsingRule<'_> {
             Terminal::Epsilon => false,
         }
     }
+
     pub(crate) fn parse_with_table(
         tokens: &[Token],
         table: &[ParsingRule],
@@ -332,10 +343,26 @@ fn update_production_with_token_value(
                     );
                 }
             }
+            Token::Operator(operator) => {
+                if let Terminal::UnaryOperator(_) = expected {
+                    update_symbols_in_production(
+                        &mut last_production.1,
+                        |symbol| matches!(symbol, Symbol::Terminal(Terminal::UnaryOperator(_))),
+                        |_| Symbol::Terminal(Terminal::UnaryOperator(operator.to_owned())),
+                    );
+                } else if let Terminal::ReassignOp = expected {
+                    update_symbols_in_production(
+                        &mut last_production.1,
+                        |symbol| matches!(symbol, Symbol::Terminal(Terminal::ReassignOp)),
+                        |_| Symbol::Terminal(Terminal::ReassignOp),
+                    );
+                }
+            }
             _ => {}
         }
     }
 }
+
 fn update_symbols_in_production<F, G>(symbols: &mut [Symbol], predicate: F, transformer: G)
 where
     F: Fn(&Symbol) -> bool,

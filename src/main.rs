@@ -13,6 +13,7 @@ use std::path::Path;
 
 mod csv_output;
 mod front;
+mod tests;
 
 pub type Tokens = Vec<Token>;
 
@@ -39,44 +40,13 @@ fn main() {
                 .unwrap()
                 .replace("\r\n", "\n");
 
-            let tokens = tokenize(code)
-                .into_iter()
-                .filter(|token| {
-                    !matches!(
-                        token,
-                        Token::Separator(Separator::WhiteSpace)
-                            | Token::Separator(Separator::NewLine)
-                            | Token::Comment(_)
-                    )
-                })
-                .collect::<Tokens>();
-
-            let ast = ParsingRule::parse_with_table(
-                &tokens,
-                &[
-                    Program::PARSING_TABLE,
-                    Function::PARSING_TABLE,
-                    Enumeration::PARSING_TABLE,
-                    Struct::PARSING_TABLE,
-                ]
-                .concat(),
-            );
-            
-
-            match ast {
-                Ok(table_output) => {
-                    csv_output::lexical_csv_output(code, &tokens);
-                    csv_output::ast_csv_output(&table_output);
-                    match table_output.type_check() {
-                        Ok(_) => println!("Type checking passed."),
-                        Err(err) => {
-                            eprintln!("\nCompilation error: {err:?}");
-                            std::process::exit(1);
-                        }
-                    }
+            match run_compiler(code) {
+                Ok(_) => {
+                    println!("Compilation successful.");
+                    std::process::exit(0);
                 }
                 Err(err) => {
-                    eprintln!("{err}");
+                    eprintln!("\nCompilation error: {err}");
                     std::process::exit(1);
                 }
             }
@@ -85,5 +55,42 @@ fn main() {
             eprintln!("{err}");
             std::process::exit(1);
         }
+    }
+}
+
+fn run_compiler(code: &String) -> Result<(), String> {
+    let tokens = tokenize(code)
+        .into_iter()
+        .filter(|token| {
+            !matches!(
+                token,
+                Token::Separator(Separator::WhiteSpace)
+                    | Token::Separator(Separator::NewLine)
+                    | Token::Comment(_)
+            )
+        })
+        .collect::<Tokens>();
+
+    let ast = ParsingRule::parse_with_table(
+        &tokens,
+        &[
+            Program::PARSING_TABLE,
+            Function::PARSING_TABLE,
+            Enumeration::PARSING_TABLE,
+            Struct::PARSING_TABLE,
+        ]
+        .concat(),
+    );
+
+    match ast {
+        Ok(table_output) => {
+            csv_output::lexical_csv_output(code, &tokens);
+            csv_output::ast_csv_output(&table_output);
+            match table_output.type_check() {
+                Ok(_) => Ok(println!("Type checking passed.")),
+                Err(err) => Err(format!("\nCompilation error: {err:?}")),
+            }
+        }
+        Err(err) => Err(format!("{err}")),
     }
 }

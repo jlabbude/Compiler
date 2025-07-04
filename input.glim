@@ -8,5 +8,7 @@ struct Estructurinha {
 }
 
 func int test() {
-    let int Pedor = 1 + 1;
+    let int pedor = 1 + 1;
+    pedor = "string";
+    Pedor += 1;
 }
